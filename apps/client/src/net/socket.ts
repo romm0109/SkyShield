@@ -3,9 +3,11 @@ import type { ClientToServerEvents, ServerToClientEvents } from "@skyshield/shar
 
 let socket: Socket<ServerToClientEvents, ClientToServerEvents> | undefined;
 
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3000";
+
 export function getSocket(): Socket<ServerToClientEvents, ClientToServerEvents> {
   if (!socket) {
-    socket = io("http://localhost:3000", {
+    socket = io(SOCKET_URL, {
       autoConnect: false
     });
   }
