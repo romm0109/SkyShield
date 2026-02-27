@@ -167,3 +167,92 @@
 - Note:
   - In sandboxed execution, Nx/Vite worker processes may fail with `spawn EPERM`.
   - Validation passes when commands are run with appropriate unsandboxed permissions.
+
+## Latest Client Routing + UI Upgrade Slice
+
+### Routing and Page Split (`apps/client`)
+
+- Added declarative client routing with `react-router`:
+  - `/` -> `LobbyPage`
+  - `/room/:roomCode` -> `RoomPage`
+  - fallback -> `NotFoundPage`
+- Updated bootstrap:
+  - `apps/client/src/main.tsx` now wraps app with `BrowserRouter`
+- App composition refactor:
+  - `apps/client/src/app/App.tsx` now serves as shell-only composition
+  - `apps/client/src/app/router.tsx` added as centralized route map
+
+### Session Ownership and Socket-State Composition
+
+- Added shared session store:
+  - `apps/client/src/app/useSessionStore.ts`
+- Centralized concerns:
+  - profile persistence (`skyshield.playerName`, `skyshield.characterId`)
+  - room code normalization + input state
+  - lobby snapshot/status/error handling
+  - create/join/start room actions
+  - single owner for connect/disconnect + lobby listeners
+- Route flow behavior:
+  - successful create/join drives navigation to `/room/:roomCode`
+  - room route guards handle missing/invalid/mismatched room context
+
+### Room and Lobby Pages
+
+- Created:
+  - `apps/client/src/pages/LobbyPage.tsx`
+  - `apps/client/src/pages/RoomPage.tsx`
+  - `apps/client/src/pages/NotFoundPage.tsx`
+- Lobby page:
+  - profile inputs
+  - create/join controls
+  - status/error surface
+  - live lobby snapshot preview
+- Room page:
+  - room metadata and players list
+  - host-only start button behavior
+  - waiting state + match rendering via `MatchView`
+  - back-to-lobby session clear action
+
+### Match Flow Adjustments
+
+- Updated `apps/client/src/game/useMatchState.ts`:
+  - removed duplicate room/lobby listeners from match hook
+  - preserved countdown/game/game-over event handlers + cleanup
+  - added reset behavior when room context clears
+- Updated `apps/client/src/game/MatchView.tsx`:
+  - preserved shot throttle + coordinate clamping behavior
+  - small layout contract alignment for new room composition
+  - added empty leaderboard message state
+
+### Visual Redesign
+
+- Replaced global styling with tokenized design system:
+  - `apps/client/src/styles.css`
+- Added page-level layout stylesheet:
+  - `apps/client/src/pages/page-layout.css`
+- Improvements include:
+  - CSS variable theme tokens (color, spacing, radius, motion)
+  - differentiated lobby vs room composition
+  - stronger visual hierarchy
+  - responsive behavior down to narrow mobile widths
+
+### Tests and Docs Updates
+
+- Updated `apps/client/src/game/MatchView.spec.ts`:
+  - retained coordinate helper assertions
+  - added `normalizeRoomCode` helper coverage
+- Updated `README.md`:
+  - documents route split and revised lobby/room control flow
+
+### Latest Validation Status (This Slice)
+
+- Passed:
+  - `npm.cmd run lint --workspace apps/client`
+  - `npm.cmd run test --workspace apps/client`
+  - `npm.cmd run typecheck --workspace apps/client`
+  - `npm.cmd run build --workspace apps/client`
+  - `npm.cmd run test`
+  - `npm.cmd run build`
+- Notes:
+  - Client `test/build/dev` commands may require unsandboxed execution due to Vite/esbuild `spawn EPERM` in sandbox.
+  - Workspace `npm.cmd run build` may require unsandboxed execution due to Nx plugin worker startup restrictions in sandbox.
