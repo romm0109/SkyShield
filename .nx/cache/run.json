@@ -1,0 +1,32 @@
+{
+  "run": {
+    "command": "nx run-many -t test --projects=shared-types,server --outputStyle=stream",
+    "startTime": "2026-02-27T17:46:02.185Z",
+    "endTime": "2026-02-27T17:46:02.200Z",
+    "inner": false
+  },
+  "tasks": [
+    {
+      "taskId": "shared-types:test",
+      "target": "test",
+      "projectName": "shared-types",
+      "hash": "192843610591353946",
+      "startTime": "2026-02-27T17:46:02.196Z",
+      "endTime": "2026-02-27T17:46:02.199Z",
+      "params": "",
+      "cacheStatus": "cache-miss",
+      "status": 1
+    },
+    {
+      "taskId": "server:test",
+      "target": "test",
+      "projectName": "server",
+      "hash": "8404725753078177448",
+      "startTime": "2026-02-27T17:46:02.196Z",
+      "endTime": "2026-02-27T17:46:02.199Z",
+      "params": "",
+      "cacheStatus": "cache-miss",
+      "status": 1
+    }
+  ]
+}

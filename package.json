@@ -1,0 +1,26 @@
+{
+  "name": "skyshield",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "shared/*"
+  ],
+  "scripts": {
+    "dev": "nx run-many -t dev --projects=server,client --parallel",
+    "build": "nx run-many -t build --projects=shared-types,server,client",
+    "typecheck": "nx run-many -t typecheck --projects=shared-types,server,client",
+    "lint": "nx run-many -t lint --projects=shared-types,server,client",
+    "test": "npm run test --workspace shared/types && npm run test --workspace apps/server",
+    "test:nx": "nx run-many -t test --projects=shared-types,server"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.44.1",
+    "@typescript-eslint/parser": "^8.44.1",
+    "eslint": "^9.37.0",
+    "nx": "^21.6.5",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}

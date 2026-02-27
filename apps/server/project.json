@@ -1,0 +1,53 @@
+{
+  "name": "server",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/server/src",
+  "projectType": "application",
+  "targets": {
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/server",
+        "command": "npm run dev"
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/server",
+        "command": "npm run build"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/server",
+        "command": "npm run typecheck"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/server",
+        "command": "npm run lint"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/server",
+        "command": "npm run test"
+      }
+    },
+    "test:integration": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/server",
+        "command": "npm run test:integration"
+      }
+    }
+  },
+  "implicitDependencies": [
+    "shared-types"
+  ]
+}

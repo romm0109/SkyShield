@@ -1,0 +1,46 @@
+{
+  "name": "client",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/client/src",
+  "projectType": "application",
+  "targets": {
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/client",
+        "command": "npm run dev"
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/client",
+        "command": "npm run build"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/client",
+        "command": "npm run typecheck"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/client",
+        "command": "npm run lint"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/client",
+        "command": "npm run test"
+      }
+    }
+  },
+  "implicitDependencies": [
+    "shared-types"
+  ]
+}

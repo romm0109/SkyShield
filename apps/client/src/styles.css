@@ -1,0 +1,30 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f3f5f7;
+  color: #0f1720;
+  font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+button,
+input {
+  font: inherit;
+  padding: 10px;
+}
+
+#app {
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.app-shell {
+  padding: 16px;
+}
+
+.controls {
+  display: grid;
+  gap: 8px;
+}

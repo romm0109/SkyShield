@@ -1,0 +1,199 @@
+{
+  "version": "6.0",
+  "nxVersion": "21.6.10",
+  "pathMappings": {},
+  "nxJsonPlugins": [],
+  "fileMap": {
+    "projectFileMap": {
+      "server": [
+        {
+          "file": "apps/server/package.json",
+          "hash": "7596509417684988600",
+          "deps": [
+            "npm:@types/node",
+            "npm:socket.io-client",
+            "shared-types",
+            "npm:socket.io"
+          ]
+        },
+        {
+          "file": "apps/server/project.json",
+          "hash": "2420196100306185775"
+        },
+        {
+          "file": "apps/server/src/config/env.ts",
+          "hash": "1478041636156625600"
+        },
+        {
+          "file": "apps/server/src/events/lobbyEvents.integration.spec.ts",
+          "hash": "10598591719899513699"
+        },
+        {
+          "file": "apps/server/src/events/lobbyEvents.ts",
+          "hash": "15534312449571372341"
+        },
+        {
+          "file": "apps/server/src/main.ts",
+          "hash": "2459658772022597592"
+        },
+        {
+          "file": "apps/server/src/rooms/roomStore.spec.ts",
+          "hash": "11637570818958728682"
+        },
+        {
+          "file": "apps/server/src/rooms/roomStore.ts",
+          "hash": "11083431063936528144"
+        },
+        {
+          "file": "apps/server/src/run-integration-tests.ts",
+          "hash": "5568688864322535375"
+        },
+        {
+          "file": "apps/server/src/run-tests.ts",
+          "hash": "3732530968157401794"
+        },
+        {
+          "file": "apps/server/tsconfig.json",
+          "hash": "13585184342387267511"
+        }
+      ],
+      "shared-types": [
+        {
+          "file": "shared/types/package.json",
+          "hash": "11073557946344331821"
+        },
+        {
+          "file": "shared/types/project.json",
+          "hash": "15932710351129578426"
+        },
+        {
+          "file": "shared/types/src/events.spec.ts",
+          "hash": "16998724582361237712"
+        },
+        {
+          "file": "shared/types/src/events.ts",
+          "hash": "5497323227077150052"
+        },
+        {
+          "file": "shared/types/src/index.ts",
+          "hash": "11893160101021918764"
+        },
+        {
+          "file": "shared/types/src/models.ts",
+          "hash": "3198392260466563497"
+        },
+        {
+          "file": "shared/types/src/run-tests.ts",
+          "hash": "6699125551977811263"
+        },
+        {
+          "file": "shared/types/tsconfig.json",
+          "hash": "13028267630629361019"
+        },
+        {
+          "file": "shared/types/tsconfig.tsbuildinfo",
+          "hash": "1627768234647180373"
+        }
+      ],
+      "client": [
+        {
+          "file": "apps/client/index.html",
+          "hash": "17814964380600613428"
+        },
+        {
+          "file": "apps/client/package.json",
+          "hash": "3840728175211765070",
+          "deps": [
+            "npm:@types/react",
+            "npm:@types/react-dom",
+            "npm:@vitejs/plugin-react",
+            "npm:vite",
+            "shared-types",
+            "npm:react",
+            "npm:react-dom",
+            "npm:socket.io-client"
+          ]
+        },
+        {
+          "file": "apps/client/project.json",
+          "hash": "16568393122213882547"
+        },
+        {
+          "file": "apps/client/src/app/App.tsx",
+          "hash": "5411257737069795112"
+        },
+        {
+          "file": "apps/client/src/main.tsx",
+          "hash": "14292990500759708100"
+        },
+        {
+          "file": "apps/client/src/net/socket.ts",
+          "hash": "11016260369715600657"
+        },
+        {
+          "file": "apps/client/src/styles.css",
+          "hash": "17749487599693873258"
+        },
+        {
+          "file": "apps/client/tsconfig.json",
+          "hash": "3349529351871913445"
+        },
+        {
+          "file": "apps/client/vite.config.ts",
+          "hash": "14822325752791868233"
+        }
+      ]
+    },
+    "nonProjectFiles": [
+      {
+        "file": ".agents/plans/init-project-foundation.md",
+        "hash": "76774764322691604"
+      },
+      {
+        "file": ".editorconfig",
+        "hash": "18324637887947393441"
+      },
+      {
+        "file": ".env.example",
+        "hash": "8474846726684389855"
+      },
+      {
+        "file": ".gitignore",
+        "hash": "8238110063606437540"
+      },
+      {
+        "file": "PRD.md",
+        "hash": "486840420183187922"
+      },
+      {
+        "file": "README.md",
+        "hash": "2241286858976802392"
+      },
+      {
+        "file": "eslint.config.js",
+        "hash": "15577643730107298162"
+      },
+      {
+        "file": "nx.json",
+        "hash": "1246805764640871934"
+      },
+      {
+        "file": "package-lock.json",
+        "hash": "10656412295948680806"
+      },
+      {
+        "file": "package.json",
+        "hash": "12581633610212923230"
+      },
+      {
+        "file": "tsconfig.base.json",
+        "hash": "16199298828180927322"
+      },
+      {
+        "file": "tsconfig.json",
+        "hash": "5442459536266259242"
+      }
+    ]
+  },
+  "externalNodesHash": "1066145368641265579"
+}
