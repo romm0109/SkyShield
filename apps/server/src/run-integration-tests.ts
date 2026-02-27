@@ -4,16 +4,39 @@ import { io as createClient } from "socket.io-client";
 import { Server } from "socket.io";
 import type { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from "@skyshield/shared-types";
 import { registerLobbyEvents } from "./events/lobbyEvents.js";
+import { MatchLifecycleManager } from "./game-loop/matchLifecycle.js";
 import { RoomStore } from "./rooms/roomStore.js";
 
+function onceWithTimeout<T>(
+  socket: ReturnType<typeof createClient>,
+  event: keyof ServerToClientEvents,
+  timeoutMs = 3000
+): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timeout = setTimeout(() => reject(new Error(`Timeout waiting for ${String(event)}`)), timeoutMs);
+    socket.once(event, (payload) => {
+      clearTimeout(timeout);
+      resolve(payload as T);
+    });
+  });
+}
+
 async function run(): Promise<void> {
-  const roomStore = new RoomStore(8);
+  const roomStore = new RoomStore(8, { matchDurationSeconds: 2, cityHp: 20 });
   const httpServer = createServer();
   const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(httpServer, {
     cors: { origin: "*" }
   });
+  const lifecycle = new MatchLifecycleManager(io, roomStore, {
+    PORT: 3000,
+    CLIENT_ORIGIN: "*",
+    MAX_PLAYERS_PER_ROOM: 8,
+    MATCH_DURATION_SECONDS: 2,
+    CITY_HP_DEFAULT: 20,
+    TICK_RATE_HZ: 10
+  });
 
-  io.on("connection", (socket) => registerLobbyEvents(io, socket, roomStore));
+  io.on("connection", (socket) => registerLobbyEvents(io, socket, roomStore, lifecycle));
 
   await new Promise<void>((resolve) => httpServer.listen(0, resolve));
   const address = httpServer.address();
@@ -59,6 +82,26 @@ async function run(): Promise<void> {
   });
 
   assert.equal(error.code, "ROOM_NOT_FOUND");
+
+  const nonHostStartErrorPromise = onceWithTimeout<{ code: string }>(clientB, "error_event");
+  clientB.emit("start_game", { roomCode });
+  const nonHostStartError = await nonHostStartErrorPromise;
+  assert.equal(nonHostStartError.code, "NOT_HOST");
+
+  const countdownPromise = onceWithTimeout<{ seconds: number }>(clientB, "game_countdown");
+  const gameStatePromise = onceWithTimeout<{ remainingSeconds: number }>(clientB, "game_state", 5000);
+  const gameOverPromise = onceWithTimeout<{ result: string; reason: string }>(clientB, "game_over", 10000);
+  clientA.emit("start_game", { roomCode });
+
+  const countdown = await countdownPromise;
+  assert.equal(countdown.seconds, 3);
+
+  const gameState = await gameStatePromise;
+  assert.equal(gameState.remainingSeconds, 2);
+
+  const gameOver = await gameOverPromise;
+  assert.equal(gameOver.result, "win");
+  assert.equal(gameOver.reason, "timer_complete");
 
   clientA.disconnect();
   clientB.disconnect();

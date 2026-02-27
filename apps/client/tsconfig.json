@@ -5,7 +5,9 @@
     "outDir": "dist",
     "jsx": "react-jsx",
     "types": [
-      "vite/client"
+      "vite/client",
+      "react",
+      "react-dom"
     ]
   },
   "include": [

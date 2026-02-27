@@ -111,3 +111,12 @@ export function isJoinRoomPayload(value: unknown): value is JoinRoomPayload {
     ROOM_CODE_PATTERN.test(payload.roomCode.trim().toUpperCase())
   );
 }
+
+export function isStartGamePayload(value: unknown): value is StartGamePayload {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const payload = value as Partial<StartGamePayload>;
+  return typeof payload.roomCode === "string" && ROOM_CODE_PATTERN.test(payload.roomCode.trim().toUpperCase());
+}

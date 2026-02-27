@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { LobbyState } from "@skyshield/shared-types";
-import { connectSocket, getSocket } from "../net/socket";
+import { connectSocket, getSocket } from "../net/socket.js";
 
 const PLAYER_NAME_KEY = "skyshield.playerName";
 const CHARACTER_ID_KEY = "skyshield.characterId";
@@ -12,7 +12,7 @@ function readInitialProfile(): { playerName: string; characterId: string } {
   };
 }
 
-export function App(): JSX.Element {
+export function App() {
   const initialProfile = useMemo(readInitialProfile, []);
   const [playerName, setPlayerName] = useState(initialProfile.playerName);
   const [characterId, setCharacterId] = useState(initialProfile.characterId);

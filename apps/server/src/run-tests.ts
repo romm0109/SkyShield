@@ -10,6 +10,8 @@ const room = store.createRoom({
 
 assert.equal(room.roomCode.length, 4);
 assert.equal(room.hostSocketId, "host-1");
+assert.equal(room.phase, "lobby");
+assert.equal(room.match.countdownSeconds, null);
 assert.equal(room.players.size, 1);
 
 const limited = new RoomStore(1);
@@ -34,5 +36,7 @@ store.joinRoom({
 });
 const updated = store.removePlayer("host-1");
 assert.equal(updated?.hostSocketId, "p2");
+assert.equal(store.isHost(room.roomCode, "p2"), true);
+assert.equal(store.isHost(room.roomCode, "host-1"), false);
 
 console.log("apps/server unit tests passed");

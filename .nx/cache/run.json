@@ -1,32 +1,43 @@
 {
   "run": {
-    "command": "nx run-many -t test --projects=shared-types,server --outputStyle=stream",
-    "startTime": "2026-02-27T17:46:02.185Z",
-    "endTime": "2026-02-27T17:46:02.200Z",
+    "command": "nx run-many -t build --projects=shared-types,server,client",
+    "startTime": "2026-02-27T18:26:30.112Z",
+    "endTime": "2026-02-27T18:26:31.944Z",
     "inner": false
   },
   "tasks": [
     {
-      "taskId": "shared-types:test",
-      "target": "test",
+      "taskId": "shared-types:build",
+      "target": "build",
       "projectName": "shared-types",
-      "hash": "192843610591353946",
-      "startTime": "2026-02-27T17:46:02.196Z",
-      "endTime": "2026-02-27T17:46:02.199Z",
+      "hash": "17619876947145673893",
+      "startTime": "2026-02-27T18:26:30.123Z",
+      "endTime": "2026-02-27T18:26:30.931Z",
       "params": "",
       "cacheStatus": "cache-miss",
-      "status": 1
+      "status": 0
     },
     {
-      "taskId": "server:test",
-      "target": "test",
+      "taskId": "server:build",
+      "target": "build",
       "projectName": "server",
-      "hash": "8404725753078177448",
-      "startTime": "2026-02-27T17:46:02.196Z",
-      "endTime": "2026-02-27T17:46:02.199Z",
+      "hash": "17479827676510958301",
+      "startTime": "2026-02-27T18:26:30.123Z",
+      "endTime": "2026-02-27T18:26:31.289Z",
       "params": "",
       "cacheStatus": "cache-miss",
-      "status": 1
+      "status": 0
+    },
+    {
+      "taskId": "client:build",
+      "target": "build",
+      "projectName": "client",
+      "hash": "13960104602366154379",
+      "startTime": "2026-02-27T18:26:30.123Z",
+      "endTime": "2026-02-27T18:26:31.944Z",
+      "params": "",
+      "cacheStatus": "cache-miss",
+      "status": 0
     }
   ]
 }

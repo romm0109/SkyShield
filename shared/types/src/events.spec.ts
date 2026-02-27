@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { isCreateRoomPayload, isJoinRoomPayload } from "./events.js";
+import { isCreateRoomPayload, isJoinRoomPayload, isStartGamePayload } from "./events.js";
 
 describe("event payload guards", () => {
   it("accepts valid create_room payload", () => {
@@ -31,5 +31,17 @@ describe("event payload guards", () => {
       }),
       false
     );
+  });
+
+  it("accepts valid start_game payload", () => {
+    assert.equal(isStartGamePayload({ roomCode: "AB12" }), true);
+  });
+
+  it("rejects invalid start_game payload with lowercase and symbols", () => {
+    assert.equal(isStartGamePayload({ roomCode: "ab-1" }), false);
+  });
+
+  it("rejects empty start_game payload", () => {
+    assert.equal(isStartGamePayload({}), false);
   });
 });

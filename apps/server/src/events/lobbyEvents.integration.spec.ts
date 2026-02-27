@@ -4,6 +4,7 @@ import { afterEach, describe, it } from "node:test";
 import { io as createClient } from "socket.io-client";
 import { Server } from "socket.io";
 import type { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from "@skyshield/shared-types";
+import { MatchLifecycleManager } from "../game-loop/matchLifecycle.js";
 import { registerLobbyEvents } from "./lobbyEvents.js";
 import { RoomStore } from "../rooms/roomStore.js";
 
@@ -34,8 +35,16 @@ describe("lobby event integration", () => {
     io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(httpServer, {
       cors: { origin: "*" }
     });
+    const lifecycle = new MatchLifecycleManager(io, roomStore, {
+      PORT: 3000,
+      CLIENT_ORIGIN: "*",
+      MAX_PLAYERS_PER_ROOM: 8,
+      MATCH_DURATION_SECONDS: 2,
+      CITY_HP_DEFAULT: 20,
+      TICK_RATE_HZ: 10
+    });
 
-    io.on("connection", (socket) => registerLobbyEvents(io!, socket, roomStore));
+    io.on("connection", (socket) => registerLobbyEvents(io!, socket, roomStore, lifecycle));
 
     await new Promise<void>((resolve) => httpServer!.listen(0, resolve));
     const address = httpServer.address();
@@ -78,8 +87,16 @@ describe("lobby event integration", () => {
     io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(httpServer, {
       cors: { origin: "*" }
     });
+    const lifecycle = new MatchLifecycleManager(io, roomStore, {
+      PORT: 3000,
+      CLIENT_ORIGIN: "*",
+      MAX_PLAYERS_PER_ROOM: 8,
+      MATCH_DURATION_SECONDS: 2,
+      CITY_HP_DEFAULT: 20,
+      TICK_RATE_HZ: 10
+    });
 
-    io.on("connection", (socket) => registerLobbyEvents(io!, socket, roomStore));
+    io.on("connection", (socket) => registerLobbyEvents(io!, socket, roomStore, lifecycle));
     await new Promise<void>((resolve) => httpServer!.listen(0, resolve));
     const address = httpServer.address();
     if (!address || typeof address === "string") {

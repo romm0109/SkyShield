@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { isCreateRoomPayload, isJoinRoomPayload } from "./events.js";
+import { isCreateRoomPayload, isJoinRoomPayload, isStartGamePayload } from "./events.js";
 
 assert.equal(isCreateRoomPayload({ playerName: "Dana", characterId: "scout" }), true);
 assert.equal(isCreateRoomPayload({ playerName: " ", characterId: "scout" }), false);
@@ -19,5 +19,8 @@ assert.equal(
   }),
   false
 );
+assert.equal(isStartGamePayload({ roomCode: "AB12" }), true);
+assert.equal(isStartGamePayload({ roomCode: "ab-1" }), false);
+assert.equal(isStartGamePayload({}), false);
 
 console.log("shared/types tests passed");

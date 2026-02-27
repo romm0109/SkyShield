@@ -1,0 +1,6 @@
+> npm run build
+
+
+> @skyshield/shared-types@0.1.0 build
+> tsc -p tsconfig.json
+

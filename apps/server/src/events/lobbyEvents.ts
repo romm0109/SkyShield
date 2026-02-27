@@ -4,8 +4,9 @@ import type {
   ServerToClientEvents,
   SocketData
 } from "@skyshield/shared-types";
-import { isCreateRoomPayload, isJoinRoomPayload } from "@skyshield/shared-types";
+import { isCreateRoomPayload, isJoinRoomPayload, isStartGamePayload } from "@skyshield/shared-types";
 import type { Server, Socket } from "socket.io";
+import { MatchLifecycleManager } from "../game-loop/matchLifecycle.js";
 import { RoomStore } from "../rooms/roomStore.js";
 
 function emitError(socket: Socket<ClientToServerEvents, ServerToClientEvents>, payload: ErrorEventPayload): void {
@@ -23,7 +24,8 @@ function sanitizeRoomCode(roomCode: string): string {
 export function registerLobbyEvents(
   io: Server<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>,
   socket: Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, SocketData>,
-  roomStore: RoomStore
+  roomStore: RoomStore,
+  matchLifecycle: MatchLifecycleManager
 ): void {
   socket.on("create_room", (rawPayload) => {
     if (!isCreateRoomPayload(rawPayload)) {
@@ -92,5 +94,42 @@ export function registerLobbyEvents(
     if (lobbyState) {
       io.to(roomCode).emit("lobby_state", lobbyState);
     }
+  });
+
+  socket.on("start_game", (rawPayload) => {
+    if (!isStartGamePayload(rawPayload)) {
+      emitError(socket, { code: "INVALID_PAYLOAD", messageHe: "קלט התחלת משחק לא תקין" });
+      return;
+    }
+
+    const roomCode = sanitizeRoomCode(rawPayload.roomCode);
+    const room = roomStore.getRoom(roomCode);
+    if (!room) {
+      emitError(socket, { code: "ROOM_NOT_FOUND", messageHe: "החדר לא נמצא" });
+      return;
+    }
+
+    if (!room.players.has(socket.id)) {
+      emitError(socket, { code: "NOT_IN_ROOM", messageHe: "השחקן לא נמצא בחדר" });
+      return;
+    }
+
+    if (!roomStore.isHost(roomCode, socket.id)) {
+      emitError(socket, { code: "NOT_HOST", messageHe: "רק המארח יכול להתחיל משחק" });
+      return;
+    }
+
+    if (room.phase !== "lobby") {
+      emitError(socket, { code: "INVALID_PHASE", messageHe: "לא ניתן להתחיל משחק בשלב הנוכחי" });
+      return;
+    }
+
+    const didStart = matchLifecycle.startCountdown(roomCode);
+    if (!didStart) {
+      emitError(socket, { code: "GAME_ALREADY_STARTED", messageHe: "המשחק כבר התחיל" });
+      return;
+    }
+
+    console.log(JSON.stringify({ event: "start_game_accepted", roomCode, socketId: socket.id }));
   });
 }

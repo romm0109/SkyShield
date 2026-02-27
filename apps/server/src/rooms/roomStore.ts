@@ -1,4 +1,4 @@
-import type { LobbyState, PlayerState, RoomState } from "@skyshield/shared-types";
+import type { LobbyState, MatchRuntimeState, PlayerState, RoomPhase, RoomState } from "@skyshield/shared-types";
 
 function generateRoomCode(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -19,12 +19,35 @@ export interface JoinRoomInput extends CreateRoomInput {
   roomCode: string;
 }
 
+export interface RoomRuntimeDefaults {
+  matchDurationSeconds: number;
+  cityHp: number;
+}
+
+const DEFAULT_RUNTIME: RoomRuntimeDefaults = {
+  matchDurationSeconds: 600,
+  cityHp: 20
+};
+
+function createInitialMatchState(runtime: RoomRuntimeDefaults): MatchRuntimeState {
+  return {
+    countdownSeconds: null,
+    remainingSeconds: runtime.matchDurationSeconds,
+    cityHp: runtime.cityHp,
+    meteors: [],
+    projectiles: [],
+    leaderboard: []
+  };
+}
+
 export class RoomStore {
   private readonly rooms = new Map<string, RoomState>();
   private readonly maxPlayersPerRoom: number;
+  private readonly runtimeDefaults: RoomRuntimeDefaults;
 
-  public constructor(maxPlayersPerRoom: number) {
+  public constructor(maxPlayersPerRoom: number, runtimeDefaults: RoomRuntimeDefaults = DEFAULT_RUNTIME) {
     this.maxPlayersPerRoom = maxPlayersPerRoom;
+    this.runtimeDefaults = runtimeDefaults;
   }
 
   public createRoom(input: CreateRoomInput): RoomState {
@@ -43,6 +66,8 @@ export class RoomStore {
     const room: RoomState = {
       roomCode,
       hostSocketId: input.socketId,
+      phase: "lobby",
+      match: createInitialMatchState(this.runtimeDefaults),
       players: new Map([[input.socketId, player]])
     };
 
@@ -116,5 +141,30 @@ export class RoomStore {
 
   public getRoom(roomCode: string): RoomState | undefined {
     return this.rooms.get(roomCode);
+  }
+
+  public setRoomPhase(roomCode: string, phase: RoomPhase): RoomState | undefined {
+    const room = this.rooms.get(roomCode);
+    if (!room) {
+      return undefined;
+    }
+
+    room.phase = phase;
+    return room;
+  }
+
+  public updateMatchState(roomCode: string, patchFn: (match: MatchRuntimeState) => MatchRuntimeState): RoomState | undefined {
+    const room = this.rooms.get(roomCode);
+    if (!room) {
+      return undefined;
+    }
+
+    room.match = patchFn(room.match);
+    return room;
+  }
+
+  public isHost(roomCode: string, socketId: string): boolean {
+    const room = this.rooms.get(roomCode);
+    return room?.hostSocketId === socketId;
   }
 }

@@ -5,96 +5,6 @@
   "nxJsonPlugins": [],
   "fileMap": {
     "projectFileMap": {
-      "server": [
-        {
-          "file": "apps/server/package.json",
-          "hash": "7596509417684988600",
-          "deps": [
-            "npm:@types/node",
-            "npm:socket.io-client",
-            "shared-types",
-            "npm:socket.io"
-          ]
-        },
-        {
-          "file": "apps/server/project.json",
-          "hash": "2420196100306185775"
-        },
-        {
-          "file": "apps/server/src/config/env.ts",
-          "hash": "1478041636156625600"
-        },
-        {
-          "file": "apps/server/src/events/lobbyEvents.integration.spec.ts",
-          "hash": "10598591719899513699"
-        },
-        {
-          "file": "apps/server/src/events/lobbyEvents.ts",
-          "hash": "15534312449571372341"
-        },
-        {
-          "file": "apps/server/src/main.ts",
-          "hash": "2459658772022597592"
-        },
-        {
-          "file": "apps/server/src/rooms/roomStore.spec.ts",
-          "hash": "11637570818958728682"
-        },
-        {
-          "file": "apps/server/src/rooms/roomStore.ts",
-          "hash": "11083431063936528144"
-        },
-        {
-          "file": "apps/server/src/run-integration-tests.ts",
-          "hash": "5568688864322535375"
-        },
-        {
-          "file": "apps/server/src/run-tests.ts",
-          "hash": "3732530968157401794"
-        },
-        {
-          "file": "apps/server/tsconfig.json",
-          "hash": "13585184342387267511"
-        }
-      ],
-      "shared-types": [
-        {
-          "file": "shared/types/package.json",
-          "hash": "11073557946344331821"
-        },
-        {
-          "file": "shared/types/project.json",
-          "hash": "15932710351129578426"
-        },
-        {
-          "file": "shared/types/src/events.spec.ts",
-          "hash": "16998724582361237712"
-        },
-        {
-          "file": "shared/types/src/events.ts",
-          "hash": "5497323227077150052"
-        },
-        {
-          "file": "shared/types/src/index.ts",
-          "hash": "11893160101021918764"
-        },
-        {
-          "file": "shared/types/src/models.ts",
-          "hash": "3198392260466563497"
-        },
-        {
-          "file": "shared/types/src/run-tests.ts",
-          "hash": "6699125551977811263"
-        },
-        {
-          "file": "shared/types/tsconfig.json",
-          "hash": "13028267630629361019"
-        },
-        {
-          "file": "shared/types/tsconfig.tsbuildinfo",
-          "hash": "1627768234647180373"
-        }
-      ],
       "client": [
         {
           "file": "apps/client/index.html",
@@ -120,11 +30,11 @@
         },
         {
           "file": "apps/client/src/app/App.tsx",
-          "hash": "5411257737069795112"
+          "hash": "9026707157205786058"
         },
         {
           "file": "apps/client/src/main.tsx",
-          "hash": "14292990500759708100"
+          "hash": "2009304064146402333"
         },
         {
           "file": "apps/client/src/net/socket.ts",
@@ -136,15 +46,121 @@
         },
         {
           "file": "apps/client/tsconfig.json",
-          "hash": "3349529351871913445"
+          "hash": "18368989495407887401"
         },
         {
           "file": "apps/client/vite.config.ts",
           "hash": "14822325752791868233"
         }
+      ],
+      "shared-types": [
+        {
+          "file": "shared/types/package.json",
+          "hash": "11073557946344331821"
+        },
+        {
+          "file": "shared/types/project.json",
+          "hash": "15932710351129578426"
+        },
+        {
+          "file": "shared/types/src/events.spec.ts",
+          "hash": "15376428148562103037"
+        },
+        {
+          "file": "shared/types/src/events.ts",
+          "hash": "15748183651872937414"
+        },
+        {
+          "file": "shared/types/src/index.ts",
+          "hash": "11893160101021918764"
+        },
+        {
+          "file": "shared/types/src/models.ts",
+          "hash": "2952280753526271260"
+        },
+        {
+          "file": "shared/types/src/run-tests.ts",
+          "hash": "9214575228361116646"
+        },
+        {
+          "file": "shared/types/tsconfig.json",
+          "hash": "13028267630629361019"
+        },
+        {
+          "file": "shared/types/tsconfig.tsbuildinfo",
+          "hash": "8379034302686711130"
+        }
+      ],
+      "server": [
+        {
+          "file": "apps/server/package.json",
+          "hash": "7596509417684988600",
+          "deps": [
+            "npm:@types/node",
+            "npm:socket.io-client",
+            "shared-types",
+            "npm:socket.io"
+          ]
+        },
+        {
+          "file": "apps/server/project.json",
+          "hash": "2420196100306185775"
+        },
+        {
+          "file": "apps/server/src/config/env.ts",
+          "hash": "1478041636156625600"
+        },
+        {
+          "file": "apps/server/src/events/lobbyEvents.integration.spec.ts",
+          "hash": "1779434529080061747"
+        },
+        {
+          "file": "apps/server/src/events/lobbyEvents.ts",
+          "hash": "13218344934095326754"
+        },
+        {
+          "file": "apps/server/src/events/startGame.integration.spec.ts",
+          "hash": "1948192119174046186"
+        },
+        {
+          "file": "apps/server/src/game-loop/matchLifecycle.spec.ts",
+          "hash": "3107775522603812197"
+        },
+        {
+          "file": "apps/server/src/game-loop/matchLifecycle.ts",
+          "hash": "3554545426840193688"
+        },
+        {
+          "file": "apps/server/src/main.ts",
+          "hash": "10530716467372573833"
+        },
+        {
+          "file": "apps/server/src/rooms/roomStore.spec.ts",
+          "hash": "5685247763979524898"
+        },
+        {
+          "file": "apps/server/src/rooms/roomStore.ts",
+          "hash": "18080511073709115725"
+        },
+        {
+          "file": "apps/server/src/run-integration-tests.ts",
+          "hash": "10442053938624124267"
+        },
+        {
+          "file": "apps/server/src/run-tests.ts",
+          "hash": "17424741498164465327"
+        },
+        {
+          "file": "apps/server/tsconfig.json",
+          "hash": "13585184342387267511"
+        }
       ]
     },
     "nonProjectFiles": [
+      {
+        "file": ".agents/plans/implement-server-game-loop-foundation.md",
+        "hash": "5238229842574473405"
+      },
       {
         "file": ".agents/plans/init-project-foundation.md",
         "hash": "76774764322691604"
@@ -160,6 +176,10 @@
       {
         "file": ".gitignore",
         "hash": "8238110063606437540"
+      },
+      {
+        "file": "IMPLEMENTED_SO_FAR.md",
+        "hash": "12773543812108569688"
       },
       {
         "file": "PRD.md",
