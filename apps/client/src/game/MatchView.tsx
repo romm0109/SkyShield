@@ -1,7 +1,11 @@
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import type { PlayerState } from "@skyshield/shared-types";
 import { getSocket } from "../net/socket.js";
 import cityImage from "../assets/city.png";
+import heavyMissileImage from "../assets/missile.png";
+import lightMissileImage from "../assets/small_missile.png";
+import { uiText } from "../app/uiText.js";
+import { playHit, playShoot } from "../audio/sfx.js";
 import { getCharacterById } from "./characters.js";
 import { toPercentX as toVisualPercentX, toPercentY as toVisualPercentY, toPlayerSlotStyle, toProjectileOwnerClass } from "./playerVisuals.js";
 import type { GameOverSnapshot, HitConfirmedSnapshot, MatchSnapshot, MatchPhase } from "./types.js";
@@ -43,6 +47,16 @@ export function clampPlayfieldTarget(targetX: number, targetY: number): { target
   };
 }
 
+export function toGameOverReasonText(gameOver: GameOverSnapshot): string {
+  const text = uiText();
+  return gameOver.reason === "city_destroyed" ? text.match.reasonCityDestroyed : text.match.reasonTimer;
+}
+
+export function toGameOverResultText(gameOver: GameOverSnapshot): string {
+  const text = uiText();
+  return gameOver.result === "win" ? text.match.win : text.match.lose;
+}
+
 export function MatchView({
   phase,
   roomCode,
@@ -54,8 +68,11 @@ export function MatchView({
   onShoot,
   shootCooldownMs = SHOT_COOLDOWN_MS
 }: MatchViewProps) {
+  const text = uiText();
   const lastShotMsRef = useRef(0);
+  const lastHitSignatureRef = useRef("");
   const topLeaderboard = useMemo(() => match.leaderboard.slice(0, 4), [match.leaderboard]);
+  const finalLeaderboard = gameOver?.finalLeaderboard ?? [];
   const playersById = useMemo(() => new Map(players.map((player) => [player.id, player])), [players]);
 
   const fireShot = (targetX: number, targetY: number): void => {
@@ -66,6 +83,7 @@ export function MatchView({
 
     lastShotMsRef.current = nowMs;
     const clamped = clampPlayfieldTarget(targetX, targetY);
+    void playShoot();
 
     if (onShoot) {
       onShoot({
@@ -88,21 +106,34 @@ export function MatchView({
     });
   };
 
+  useEffect(() => {
+    if (!lastHit) {
+      return;
+    }
+
+    const signature = `${lastHit.byPlayerId}:${lastHit.meteorId}:${lastHit.points}`;
+    if (signature === lastHitSignatureRef.current) {
+      return;
+    }
+    lastHitSignatureRef.current = signature;
+    void playHit();
+  }, [lastHit]);
+
   return (
     <section className="match-shell card">
       <header className="hud">
         <div>
-          <p className="hud-label">Time</p>
+          <p className="hud-label">{text.match.hudTime}</p>
           <p className="hud-value">{match.remainingSeconds}s</p>
         </div>
         <div>
-          <p className="hud-label">City HP</p>
+          <p className="hud-label">{text.match.hudCityHp}</p>
           <div className="hp-track">
             <div className="hp-fill" style={{ width: `${Math.max(0, Math.min(100, match.cityHp * 5))}%` }} />
           </div>
         </div>
         <div>
-          <p className="hud-label">Top Score</p>
+          <p className="hud-label">{text.match.hudTopScore}</p>
           <p className="hud-value">{topLeaderboard[0]?.score ?? 0}</p>
         </div>
       </header>
@@ -115,21 +146,51 @@ export function MatchView({
         }}
       >
         <img className="city-layer" src={cityImage} alt="" aria-hidden />
-        {phase === "countdown" && <div className="overlay-pill">Match starts in {countdownSeconds ?? 3}</div>}
-        {phase === "game_over" && gameOver && (
+        {phase === "countdown" && (
           <div className="overlay-pill">
-            {gameOver.reason === "city_destroyed" ? "City Destroyed" : "Timer Complete"} | {gameOver.result.toUpperCase()}
+            {text.match.countdownPrefix} {countdownSeconds ?? 3}
           </div>
         )}
-        {lastHit && <div className="hit-toast">Hit +{lastHit.points}</div>}
+        {phase === "game_over" && gameOver && (
+          <div className="overlay-pill game-over-panel">
+            <h3>{text.match.resultPanelTitle}</h3>
+            <p>
+              {toGameOverResultText(gameOver)} | {toGameOverReasonText(gameOver)}
+            </p>
+            <h4>{text.match.finalLeaderboardTitle}</h4>
+            <ul className="plain-list">
+              {finalLeaderboard.map((entry, index) => (
+                <li key={`${entry.playerName}-${index}`}>
+                  <span>
+                    #{index + 1} {entry.playerName}
+                  </span>
+                  <span>
+                    {entry.score} {text.lobby.scoreUnit} ({text.match.accuracyLabel}: {entry.accuracy}%)
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {lastHit && (
+          <div className="hit-toast">
+            {text.match.hitPrefix} +{lastHit.points}
+          </div>
+        )}
 
         {match.meteors.map((meteor) => (
           <div
             key={meteor.id}
-            className={`meteor meteor-${meteor.type}`}
+            className="meteor"
             style={{ left: toPercentX(meteor.x), top: toPercentY(meteor.y), width: meteor.radius * 2, height: meteor.radius * 2 }}
           >
-            <div className="meteor-core" />
+            <img
+              className="meteor-image"
+              src={meteor.type === "light" ? lightMissileImage : heavyMissileImage}
+              alt=""
+              aria-hidden
+              draggable={false}
+            />
           </div>
         ))}
 
@@ -162,9 +223,9 @@ export function MatchView({
       </div>
 
       <aside className="leaderboard">
-        <h2>Leaderboard</h2>
+        <h2>{text.match.leaderboardTitle}</h2>
         {topLeaderboard.length === 0 ? (
-          <p className="leaderboard-empty">No scores yet.</p>
+          <p className="leaderboard-empty">{text.match.leaderboardEmpty}</p>
         ) : (
           topLeaderboard.map((entry) => (
             <div className="leaderboard-row" key={entry.id}>
@@ -172,7 +233,7 @@ export function MatchView({
                 #{entry.rank} {entry.playerName}
               </span>
               <span>
-                {entry.score} pts ({entry.accuracy}%)
+                {entry.score} {text.lobby.scoreUnit} ({entry.accuracy}%)
               </span>
             </div>
           ))

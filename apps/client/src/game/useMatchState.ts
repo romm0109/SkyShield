@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { LobbyState } from "@skyshield/shared-types";
 import { getSocket } from "../net/socket.js";
+import { playGameOver } from "../audio/sfx.js";
 import type { GameOverSnapshot, HitConfirmedSnapshot, MatchPhase, MatchSnapshot } from "./types.js";
 
 const EMPTY_MATCH: MatchSnapshot = {
@@ -30,6 +31,7 @@ export function useMatchState(initialLobbyState: LobbyState | null, initialRoomC
   const [gameOver, setGameOver] = useState<GameOverSnapshot | null>(null);
   const [lobbyState, setLobbyState] = useState<LobbyState | null>(initialLobbyState);
   const [roomCode, setRoomCode] = useState(initialRoomCode);
+  const lastGameOverSignatureRef = useRef("");
 
   useEffect(() => {
     setLobbyState(initialLobbyState);
@@ -43,6 +45,7 @@ export function useMatchState(initialLobbyState: LobbyState | null, initialRoomC
       setGameOver(null);
       setLastHit(null);
       setMatch(EMPTY_MATCH);
+      lastGameOverSignatureRef.current = "";
     }
   }, [initialRoomCode]);
 
@@ -62,6 +65,13 @@ export function useMatchState(initialLobbyState: LobbyState | null, initialRoomC
       setLastHit(payload);
     };
     const onGameOver = (payload: GameOverSnapshot) => {
+      const signature = `${payload.result}:${payload.reason}:${payload.finalLeaderboard
+        .map((entry) => `${entry.playerName}:${entry.score}:${entry.accuracy}`)
+        .join("|")}`;
+      if (signature !== lastGameOverSignatureRef.current) {
+        lastGameOverSignatureRef.current = signature;
+        void playGameOver();
+      }
       setGameOver(payload);
       setPhase("game_over");
       setCountdownSeconds(null);

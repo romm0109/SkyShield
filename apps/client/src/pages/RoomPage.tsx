@@ -3,12 +3,15 @@ import { MatchView } from "../game/MatchView.js";
 import { getCharacterById } from "../game/characters.js";
 import { getSocket } from "../net/socket.js";
 import { normalizeRoomCode, useSessionStore } from "../app/useSessionStore.js";
+import { uiText } from "../app/uiText.js";
 
 export function RoomPage() {
+  const text = uiText();
   const navigate = useNavigate();
   const { roomCode } = useParams();
   const routeRoomCode = normalizeRoomCode(roomCode ?? "");
-  const { status, activeRoomCode, lobbyState, matchState, startGame, clearSessionRoom } = useSessionStore();
+  const { status, activeRoomCode, lobbyState, matchState, audioEnabled, setAudioEnabled, startGame, clearSessionRoom } =
+    useSessionStore();
 
   if (!routeRoomCode) {
     return <Navigate to="/" replace />;
@@ -28,15 +31,15 @@ export function RoomPage() {
   const shouldRenderMatch = phase === "countdown" || phase === "in_game" || phase === "game_over";
 
   return (
-    <main className="page page-room">
+    <main className="page page-room" dir="rtl">
       <section className="card room-header">
         <div>
-          <p className="eyebrow">Room</p>
+          <p className="eyebrow">{text.room.eyebrow}</p>
           <h1>{activeRoomCode}</h1>
         </div>
         <div className="button-row">
           <button type="button" onClick={startGame} disabled={!isHost || !lobbyState}>
-            {isHost ? "Start Game" : "Host Only"}
+            {isHost ? (phase === "game_over" ? text.room.playAgain : text.room.startGame) : text.room.hostOnly}
           </button>
           <button
             type="button"
@@ -45,16 +48,19 @@ export function RoomPage() {
               navigate("/", { replace: true });
             }}
           >
-            Back to Lobby
+            {text.room.backToLobby}
+          </button>
+          <button type="button" onClick={() => setAudioEnabled(!audioEnabled)}>
+            {audioEnabled ? text.audio.on : text.audio.off}
           </button>
         </div>
         <p className="status-line">{status}</p>
       </section>
 
       <section className="card room-meta">
-        <h2>Players</h2>
+        <h2>{text.room.playersTitle}</h2>
         {!lobbyState ? (
-          <p>Waiting for lobby sync.</p>
+          <p>{text.room.waitingForSync}</p>
         ) : (
           <ul className="plain-list">
             {lobbyState.players.map((player) => {
@@ -65,7 +71,9 @@ export function RoomPage() {
                     {character ? <img src={character.imageSrc} alt={character.label} /> : <span className="player-avatar-fallback" />}
                     <span>{player.playerName}</span>
                   </span>
-                  <span>{player.score} pts</span>
+                  <span>
+                    {player.score} {text.lobby.scoreUnit}
+                  </span>
                 </li>
               );
             })}
@@ -85,8 +93,8 @@ export function RoomPage() {
         />
       ) : (
         <section className="card waiting-shell">
-          <h2>Waiting For Match Start</h2>
-          <p>Host can start when players are ready.</p>
+          <h2>{text.room.waitingForMatchTitle}</h2>
+          <p>{text.room.waitingForMatchSubtitle}</p>
         </section>
       )}
     </main>

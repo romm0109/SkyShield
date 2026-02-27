@@ -8,9 +8,20 @@ import { isCreateRoomPayload, isJoinRoomPayload, isStartGamePayload } from "@sky
 import type { Server, Socket } from "socket.io";
 import { MatchLifecycleManager } from "../game-loop/matchLifecycle.js";
 import { RoomStore } from "../rooms/roomStore.js";
+import { createSocketRateLimiter } from "./rateLimit.js";
+
+const LOBBY_EVENT_THROTTLE_MS = 500;
+const lobbyRateLimiter = createSocketRateLimiter({ minIntervalMs: LOBBY_EVENT_THROTTLE_MS });
 
 function emitError(socket: Socket<ClientToServerEvents, ServerToClientEvents>, payload: ErrorEventPayload): void {
   socket.emit("error_event", payload);
+}
+
+function emitThrottled(socket: Socket<ClientToServerEvents, ServerToClientEvents>): void {
+  emitError(socket, {
+    code: "EVENT_THROTTLED",
+    messageHe: "δτςεμδ πωμηδ ξδψ ξγι. πρε ωεα αςεγ ψβς."
+  });
 }
 
 function sanitizePlayerName(name: string): string {
@@ -27,9 +38,18 @@ export function registerLobbyEvents(
   roomStore: RoomStore,
   matchLifecycle: MatchLifecycleManager
 ): void {
+  socket.on("set_audio_pref", (payload) => {
+    console.log(JSON.stringify({ event: "audio_pref_received", socketId: socket.id, enabled: payload.enabled }));
+  });
+
   socket.on("create_room", (rawPayload) => {
+    if (!lobbyRateLimiter.allow(socket.id, "create_room")) {
+      emitThrottled(socket);
+      return;
+    }
+
     if (!isCreateRoomPayload(rawPayload)) {
-      emitError(socket, { code: "INVALID_PAYLOAD", messageHe: "Χ¤Χ¨ΧΧ™ Χ©Χ—Χ§Χ ΧΧ ΧªΧ§Χ™Χ Χ™Χ" });
+      emitError(socket, { code: "INVALID_PAYLOAD", messageHe: "τψθι δωηχο μΰ ϊχιπιν" });
       return;
     }
 
@@ -58,8 +78,13 @@ export function registerLobbyEvents(
   });
 
   socket.on("join_room", (rawPayload) => {
+    if (!lobbyRateLimiter.allow(socket.id, "join_room")) {
+      emitThrottled(socket);
+      return;
+    }
+
     if (!isJoinRoomPayload(rawPayload)) {
-      emitError(socket, { code: "INVALID_PAYLOAD", messageHe: "Χ§Χ•Χ“ Χ—Χ“Χ¨ ΧΧ• Χ¤Χ¨ΧΧ™ Χ©Χ—Χ§Χ ΧΧ ΧªΧ§Χ™Χ Χ™Χ" });
+      emitError(socket, { code: "INVALID_PAYLOAD", messageHe: "χεγ ηγψ ΰε τψθι ωηχο μΰ ϊχιπιν" });
       return;
     }
 
@@ -77,8 +102,8 @@ export function registerLobbyEvents(
     if ("error" in joinResult) {
       const payload =
         joinResult.error === "ROOM_NOT_FOUND"
-          ? { code: "ROOM_NOT_FOUND", messageHe: "Χ”Χ—Χ“Χ¨ ΧΧ Χ ΧΧ¦Χ" }
-          : { code: "ROOM_FULL", messageHe: "Χ”Χ—Χ“Χ¨ ΧΧΧ" };
+          ? { code: "ROOM_NOT_FOUND", messageHe: "δηγψ μΰ πξφΰ" }
+          : { code: "ROOM_FULL", messageHe: "δηγψ ξμΰ" };
       emitError(socket, payload);
       console.log(JSON.stringify({ event: "join_room_failed", socketId: socket.id, roomCode, code: payload.code }));
       return;
@@ -97,36 +122,41 @@ export function registerLobbyEvents(
   });
 
   socket.on("start_game", (rawPayload) => {
+    if (!lobbyRateLimiter.allow(socket.id, "start_game")) {
+      emitThrottled(socket);
+      return;
+    }
+
     if (!isStartGamePayload(rawPayload)) {
-      emitError(socket, { code: "INVALID_PAYLOAD", messageHe: "Χ§ΧΧ Χ”ΧªΧ—ΧΧª ΧΧ©Χ—Χ§ ΧΧ ΧªΧ§Χ™Χ" });
+      emitError(socket, { code: "INVALID_PAYLOAD", messageHe: "χμθ δϊημϊ ξωηχ μΰ ϊχιο" });
       return;
     }
 
     const roomCode = sanitizeRoomCode(rawPayload.roomCode);
     const room = roomStore.getRoom(roomCode);
     if (!room) {
-      emitError(socket, { code: "ROOM_NOT_FOUND", messageHe: "Χ”Χ—Χ“Χ¨ ΧΧ Χ ΧΧ¦Χ" });
+      emitError(socket, { code: "ROOM_NOT_FOUND", messageHe: "δηγψ μΰ πξφΰ" });
       return;
     }
 
     if (!room.players.has(socket.id)) {
-      emitError(socket, { code: "NOT_IN_ROOM", messageHe: "Χ”Χ©Χ—Χ§Χ ΧΧ Χ ΧΧ¦Χ Χ‘Χ—Χ“Χ¨" });
+      emitError(socket, { code: "NOT_IN_ROOM", messageHe: "δωηχο μΰ πξφΰ αηγψ" });
       return;
     }
 
     if (!roomStore.isHost(roomCode, socket.id)) {
-      emitError(socket, { code: "NOT_HOST", messageHe: "Χ¨Χ§ Χ”ΧΧΧ¨Χ— Χ™Χ›Χ•Χ ΧΧ”ΧªΧ—Χ™Χ ΧΧ©Χ—Χ§" });
+      emitError(socket, { code: "NOT_HOST", messageHe: "ψχ δξΰψη ιλεμ μδϊηιμ ξωηχ" });
       return;
     }
 
     if (room.phase !== "lobby") {
-      emitError(socket, { code: "INVALID_PHASE", messageHe: "ΧΧ Χ Χ™ΧªΧ ΧΧ”ΧªΧ—Χ™Χ ΧΧ©Χ—Χ§ Χ‘Χ©ΧΧ‘ Χ”Χ Χ•Χ›Χ—Χ™" });
+      emitError(socket, { code: "INVALID_PHASE", messageHe: "μΰ πιϊο μδϊηιμ ξωηχ αωμα δπεληι" });
       return;
     }
 
     const didStart = matchLifecycle.startCountdown(roomCode);
     if (!didStart) {
-      emitError(socket, { code: "GAME_ALREADY_STARTED", messageHe: "Χ”ΧΧ©Χ—Χ§ Χ›Χ‘Χ¨ Χ”ΧªΧ—Χ™Χ" });
+      emitError(socket, { code: "GAME_ALREADY_STARTED", messageHe: "δξωηχ λαψ δϊηιμ" });
       return;
     }
 

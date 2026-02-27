@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { clampPlayfieldTarget, toPercentX, toPercentY } from "./MatchView.js";
+import { clampPlayfieldTarget, toGameOverReasonText, toGameOverResultText, toPercentX, toPercentY } from "./MatchView.js";
 import { toPlayerSlotStyle, toProjectileOwnerClass } from "./playerVisuals.js";
 import { normalizeRoomCode } from "../app/useSessionStore.js";
 
@@ -34,5 +34,25 @@ describe("MatchView coordinate helpers", () => {
 describe("session helper utilities", () => {
   it("normalizes room code to uppercase trimmed value", () => {
     expect(normalizeRoomCode(" ab12 ")).toBe("AB12");
+  });
+});
+
+describe("game-over text helpers", () => {
+  it("maps reason/result to localized labels", () => {
+    expect(
+      toGameOverReasonText({
+        reason: "city_destroyed",
+        result: "lose",
+        finalLeaderboard: []
+      })
+    ).toBe("העיר הושמדה");
+
+    expect(
+      toGameOverResultText({
+        reason: "timer_complete",
+        result: "win",
+        finalLeaderboard: []
+      })
+    ).toBe("ניצחון");
   });
 });

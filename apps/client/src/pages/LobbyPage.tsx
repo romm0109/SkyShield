@@ -1,9 +1,11 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import { normalizeRoomCode, useSessionStore } from "../app/useSessionStore.js";
+import { uiText } from "../app/uiText.js";
 import { CHARACTER_OPTIONS, getCharacterById } from "../game/characters.js";
 
 export function LobbyPage() {
+  const text = uiText();
   const navigate = useNavigate();
   const {
     playerName,
@@ -16,6 +18,8 @@ export function LobbyPage() {
     setPlayerName,
     setCharacterId,
     setRoomCodeInput,
+    audioEnabled,
+    setAudioEnabled,
     createRoom,
     joinRoom,
     enterOfflineMode
@@ -29,24 +33,24 @@ export function LobbyPage() {
   }, [activeRoomCode, matchState.roomCode, navigate]);
 
   return (
-    <main className="page page-lobby">
+    <main className="page page-lobby" dir="rtl">
       <section className="lobby-hero card">
-        <p className="eyebrow">SkyShield</p>
-        <h1>Room Control</h1>
-        <p className="lead">Create or join a room, then move into the live command center.</p>
+        <p className="eyebrow">{text.appName}</p>
+        <h1>{text.lobby.title}</h1>
+        <p className="lead">{text.lobby.subtitle}</p>
       </section>
 
       <section className="card form-grid">
         <label>
-          Player name
+          {text.lobby.playerNameLabel}
           <input
-            placeholder="2-16 chars"
+            placeholder={text.lobby.playerNamePlaceholder}
             value={playerName}
             onChange={(event) => setPlayerName(event.target.value)}
           />
         </label>
         <fieldset className="character-picker">
-          <legend>Character</legend>
+          <legend>{text.lobby.characterLabel}</legend>
           <div className="character-grid">
             {CHARACTER_OPTIONS.map((character) => {
               const isSelected = character.id === characterId;
@@ -66,9 +70,9 @@ export function LobbyPage() {
           </div>
         </fieldset>
         <label>
-          Room code
+          {text.lobby.roomCodeLabel}
           <input
-            placeholder="AB12"
+            placeholder={text.lobby.roomCodePlaceholder}
             maxLength={6}
             value={roomCodeInput}
             onChange={(event) => setRoomCodeInput(normalizeRoomCode(event.target.value))}
@@ -76,10 +80,10 @@ export function LobbyPage() {
         </label>
         <div className="button-row">
           <button type="button" onClick={createRoom}>
-            Create Room
+            {text.lobby.createRoom}
           </button>
           <button type="button" onClick={joinRoom}>
-            Join Room
+            {text.lobby.joinRoom}
           </button>
           <button
             type="button"
@@ -88,20 +92,23 @@ export function LobbyPage() {
               navigate("/offline");
             }}
           >
-            Singleplayer (Offline)
+            {text.lobby.offlineMode}
+          </button>
+          <button type="button" onClick={() => setAudioEnabled(!audioEnabled)}>
+            {audioEnabled ? text.audio.on : text.audio.off}
           </button>
         </div>
         <p className="status-line">{status}</p>
       </section>
 
       <section className="card lobby-preview">
-        <h2>Lobby Snapshot</h2>
+        <h2>{text.lobby.snapshotTitle}</h2>
         {!lobbyState ? (
-          <p>No room data yet.</p>
+          <p>{text.lobby.noRoomData}</p>
         ) : (
           <>
             <p>
-              Room <strong>{lobbyState.roomCode}</strong>
+              {text.lobby.roomPrefix} <strong>{lobbyState.roomCode}</strong>
             </p>
             <ul className="plain-list">
               {lobbyState.players.map((player) => {
@@ -112,7 +119,9 @@ export function LobbyPage() {
                       {character ? <img src={character.imageSrc} alt={character.label} /> : <span className="player-avatar-fallback" />}
                       <span>{player.playerName}</span>
                     </span>
-                    <span>{player.score} pts</span>
+                    <span>
+                      {player.score} {text.lobby.scoreUnit}
+                    </span>
                   </li>
                 );
               })}

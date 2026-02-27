@@ -341,3 +341,195 @@
   - `npm.cmd run dev` (root Nx run-many)
   - failure cause: duplicate project names from `.worktrees/fixing-game-looks/*` and main workspace
   - Nx error: `MultipleProjectsWithSameNameError` for `client`, `server`, `shared-types`
+
+## Latest Multi-Cannon Rendering + Image Character Selection Slice
+
+### Shared Contracts
+
+- Updated `shared/types/src/models.ts`:
+  - added `PlayerSlotState`
+  - added `playerSlots` to `MatchRuntimeState`
+- Updated `shared/types/src/events.ts`:
+  - `game_state` payload now includes `playerSlots`
+- Updated shared simulation (`shared/types/src/simulation.ts`):
+  - projectile spawn origin now comes from authoritative shooter slot (`match.playerSlots`)
+  - removed center-origin projectile spawning behavior
+
+### Server Authoritative Slot Lifecycle
+
+- Added deterministic slot utility:
+  - `apps/server/src/game-loop/playerSlots.ts`
+  - deterministic player ordering + evenly spaced bottom-lane cannon slots
+- Updated room lifecycle store:
+  - `apps/server/src/rooms/roomStore.ts`
+  - slot rebuild on create/join/remove
+  - room runtime defaults now include playfield width and ground y
+- Updated match lifecycle:
+  - `apps/server/src/game-loop/matchLifecycle.ts`
+  - rebuild slots on match start
+  - emit `playerSlots` in every `game_state`
+- Updated server bootstrap defaults:
+  - `apps/server/src/main.ts` now passes playfield/ground env values into `RoomStore`
+
+### Client Character + Match Visuals
+
+- Added centralized character registry:
+  - `apps/client/src/game/characters.ts`
+  - local asset mapping + default id + validators/lookups
+- Added visual helper module:
+  - `apps/client/src/game/playerVisuals.ts`
+  - slot->CSS position mapping + deterministic projectile owner class mapping
+- Updated session/profile behavior:
+  - `apps/client/src/app/useSessionStore.ts`
+  - character id validation and fallback to default for invalid localStorage values
+- Updated lobby UX:
+  - `apps/client/src/pages/LobbyPage.tsx`
+  - text character input replaced with image-card selector
+  - lobby preview now shows character thumbnails
+- Updated room roster UX:
+  - `apps/client/src/pages/RoomPage.tsx`
+  - player list now includes character thumbnails
+- Updated match rendering:
+  - `apps/client/src/game/MatchView.tsx`
+  - city background layer from local asset
+  - player actors (character + cannon) rendered from `game_state.playerSlots`
+  - owner-tinted projectile styling classes
+  - richer meteor visuals while keeping hit/collision mechanics unchanged
+- Updated styling:
+  - `apps/client/src/styles.css`
+  - `apps/client/src/pages/page-layout.css`
+  - added character picker grid/cards, player chips, match layers and projectile owner variants
+- Updated offline compatibility:
+  - `apps/client/src/offline/useOfflineMatchState.ts`
+  - includes `playerSlots` in offline match snapshots/state
+
+### Tests Added/Updated
+
+- Updated `apps/server/src/game-loop/simulation.spec.ts`:
+  - verifies different shooters spawn from different origins
+  - verifies multi-shooter scoring correctness
+- Updated `apps/server/src/events/shootEvents.integration.spec.ts`:
+  - multi-client scenario validates `game_state.playerSlots`
+  - validates visibility of owner-specific projectile streams
+- Updated `apps/client/src/game/MatchView.spec.ts`:
+  - added tests for slot visual mapping and owner class mapping
+- Updated `shared/types/src/simulation.spec.ts` fixtures for new `playerSlots` requirement
+
+### Docs
+
+- Updated `README.md` to document:
+  - image-based character selection
+  - all-player/all-cannon/all-shot rendering behavior
+  - city background and visual updates
+
+### Latest Validation Status (This Slice)
+
+- Passed:
+  - `npm.cmd run lint --workspace shared/types`
+  - `npm.cmd run lint --workspace apps/server`
+  - `npm.cmd run lint --workspace apps/client`
+  - `npm.cmd run test --workspace shared/types`
+  - `npm.cmd run test --workspace apps/server`
+  - `npm.cmd run test --workspace apps/client`
+  - `npm.cmd run test:integration --workspace apps/server`
+  - `npm.cmd run typecheck --workspace shared/types`
+  - `npm.cmd run typecheck --workspace apps/server`
+  - `npm.cmd run typecheck --workspace apps/client`
+  - `npm.cmd run build --workspace shared/types`
+  - `npm.cmd run build --workspace apps/server`
+  - `npm.cmd run build --workspace apps/client`
+  - `npm.cmd run test`
+  - `npm.cmd run build`
+- Note:
+  - In this environment, client `test/build` commands may require unsandboxed execution due to Vite/esbuild `spawn EPERM` under sandbox.
+
+## Latest Hebrew UI + Audio + Replay + Rate-Limit Slice
+
+### Client UX and Match Rendering
+
+- Added centralized Hebrew text dictionary:
+  - `apps/client/src/app/uiText.ts`
+- Added minimal Web Audio SFX utility with persistent enable/disable support:
+  - `apps/client/src/audio/sfx.ts`
+- Updated session store:
+  - `apps/client/src/app/useSessionStore.ts`
+  - added `skyshield.audioEnabled` persistence
+  - added `set_audio_pref` emit on connect/toggle/create/join/start
+  - wired localized status messages
+- Updated pages to Hebrew + RTL and audio toggle controls:
+  - `apps/client/src/pages/LobbyPage.tsx`
+  - `apps/client/src/pages/RoomPage.tsx`
+  - `apps/client/src/pages/OfflinePage.tsx`
+- Updated match UI:
+  - `apps/client/src/game/MatchView.tsx`
+  - Hebrew HUD/leaderboard labels
+  - dedicated game-over summary panel using `finalLeaderboard`
+  - missile sprite rendering by meteor type:
+    - `light` -> `small_missile.png`
+    - `heavy` -> `missile.png`
+  - shoot/hit SFX hooks
+- Updated match state hook for one-time game-over SFX:
+  - `apps/client/src/game/useMatchState.ts`
+- Updated styles for sprite meteors and game-over panel:
+  - `apps/client/src/styles.css`
+
+### Server Rate Limiting + Events
+
+- Added reusable socket event limiter utility:
+  - `apps/server/src/events/rateLimit.ts`
+- Added limiter-focused test file:
+  - `apps/server/src/events/rateLimit.spec.ts`
+- Updated lobby handlers:
+  - `apps/server/src/events/lobbyEvents.ts`
+  - throttles `create_room`, `join_room`, `start_game` with `EVENT_THROTTLED`
+  - added lightweight `set_audio_pref` event handling/logging
+- Updated shoot handler to reuse shared limiter while preserving `SHOT_THROTTLED` behavior:
+  - `apps/server/src/events/shootEvents.ts`
+
+### Integration and Test Coverage Updates
+
+- Extended lobby integration suite and made it part of integration runner:
+  - `apps/server/src/events/lobbyEvents.integration.spec.ts`
+  - `apps/server/src/run-integration-tests.ts`
+- Extended rapid repeated host start coverage:
+  - `apps/server/src/events/startGame.integration.spec.ts`
+- Extended client helper tests for game-over label derivation:
+  - `apps/client/src/game/MatchView.spec.ts`
+- Added rate limiter assertions to server unit test entrypoint:
+  - `apps/server/src/run-tests.ts`
+
+### Documentation
+
+- Updated `README.md` with:
+  - Hebrew-first UI scope
+  - audio toggle/SFX behavior
+  - host play-again flow
+  - lobby-control event throttling behavior
+
+### Validation Status (This Slice)
+
+- Passed:
+  - `npm.cmd run typecheck --workspace apps/client`
+  - `npm.cmd run test --workspace apps/client`
+  - `npm.cmd run build --workspace apps/client`
+  - `npm.cmd run typecheck --workspace apps/server`
+  - `npm.cmd run test --workspace apps/server`
+  - `npm.cmd run test:integration --workspace apps/server`
+  - `npm.cmd run build`
+- Notes:
+  - Sandboxed client test/build commands intermittently fail with `spawn EPERM` (esbuild/vite process spawn restriction).
+  - Commands pass when re-run outside sandbox permissions.
+
+### Post-Execution Validation Refresh
+
+- Re-ran full required validation sequence and all commands passed:
+  - `npm.cmd run lint --workspace shared/types`
+  - `npm.cmd run lint --workspace apps/server`
+  - `npm.cmd run lint --workspace apps/client`
+  - `npm.cmd run test --workspace shared/types`
+  - `npm.cmd run test --workspace apps/server`
+  - `npm.cmd run test --workspace apps/client`
+  - `npm.cmd run test:integration --workspace apps/server`
+  - `npm.cmd run build`
+- Environment note:
+  - `apps/client` test/build can fail in sandbox with `spawn EPERM`; pass when re-run unsandboxed.

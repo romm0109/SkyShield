@@ -1,0 +1,6 @@
+> npm run lint
+
+
+> @skyshield/shared-types@0.1.0 lint
+> eslint src --ext .ts
+

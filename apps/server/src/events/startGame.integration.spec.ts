@@ -116,10 +116,14 @@ export async function runStartGameIntegrationSuite(): Promise<void> {
       const countdownPromise = onceWithTimeout<{ seconds: number }>(guest, "game_countdown");
       const statePromise = onceWithTimeout<{ remainingSeconds: number }>(guest, "game_state", 6000);
       host.emit("start_game", { roomCode });
+      const rapidRetryErrorPromise = onceWithTimeout<{ code: string }>(host, "error_event");
+      host.emit("start_game", { roomCode });
       const countdown = await countdownPromise;
       const firstState = await statePromise;
+      const rapidRetryError = await rapidRetryErrorPromise;
       assert.equal(countdown.seconds, 3);
       assert.equal(firstState.remainingSeconds, 3);
+      assert.equal(rapidRetryError.code, "EVENT_THROTTLED");
     } finally {
       host.disconnect();
       guest.disconnect();

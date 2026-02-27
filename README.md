@@ -62,8 +62,9 @@ shared/
 ## Current MVP Foundation Scope
 
 - Room create/join flow over Socket.io
+- Hebrew-first UI across lobby/room/offline/match flows
 - Lobby state sync for connected players
-- Local profile persistence (`skyshield.playerName`, `skyshield.characterId`)
+- Local profile persistence (`skyshield.playerName`, `skyshield.characterId`, `skyshield.audioEnabled`)
 - Image-based character selection from local player assets
 - Offline singleplayer route with local browser simulation (`/offline`)
 - In-memory server room store (no DB)
@@ -74,6 +75,10 @@ shared/
   - Collision scoring + live leaderboard
   - City HP damage + `city_destroyed` game-over path
 - Client in-match renderer (HUD + city backdrop + all players/cannons/projectiles + click/tap shooting)
+- Missile sprite meteor visuals (`small_missile.png` for light, `missile.png` for heavy)
+- Match SFX with on/off user toggle (shoot, hit, game-over)
+- Host replay flow using existing `start_game` after game-over
+- Baseline event throttling for `create_room`, `join_room`, and `start_game` in addition to `shoot`
 
 ## Known Limitations
 
@@ -86,7 +91,7 @@ shared/
 
 - Lobby page (`/`):
   - Set profile (`playerName`) and pick a character image, then create or join a room.
-  - Use `Singleplayer (Offline)` to start a local match with no room code.
+  - Toggle audio on/off (`skyshield.audioEnabled`) and use `Singleplayer (Offline)` for local play.
   - Successful create/join navigates to `/room/:roomCode`.
 - Offline page (`/offline`):
   - Runs a full local match in-browser (countdown, shooting, score, city HP, game over).
@@ -94,10 +99,12 @@ shared/
   - `Retry Match` starts a fresh 10-minute session.
 - Room page (`/room/:roomCode`):
   - Shows room roster with character thumbnails and host controls.
-  - Host clicks `Start Game`.
+  - Host clicks `Start Game` and can use `Play Again` after game-over.
   - During match, click/tap inside the playfield to fire at target coordinates.
   - All connected clients see every player actor/cannon, all active meteors, and all projectiles.
-- Reload throttle is server-enforced at `400ms` between shots per socket.
+- Server throttling:
+  - `shoot`: `400ms` between events per socket.
+  - `create_room`, `join_room`, `start_game`: baseline throttle with `EVENT_THROTTLED` protection.
 
 ## Simulation Environment Variables
 

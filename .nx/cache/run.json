@@ -1,40 +1,40 @@
 {
   "run": {
-    "command": "nx run-many -t build --projects=shared-types,server,client",
-    "startTime": "2026-02-27T22:45:28.317Z",
-    "endTime": "2026-02-27T22:45:30.737Z",
+    "command": "nx run-many -t lint --projects=shared-types,server,client",
+    "startTime": "2026-02-27T23:20:55.141Z",
+    "endTime": "2026-02-27T23:20:56.533Z",
     "inner": false
   },
   "tasks": [
     {
-      "taskId": "shared-types:build",
-      "target": "build",
+      "taskId": "shared-types:lint",
+      "target": "lint",
       "projectName": "shared-types",
-      "hash": "9920185013979784958",
-      "startTime": "2026-02-27T22:45:28.328Z",
-      "endTime": "2026-02-27T22:45:29.145Z",
+      "hash": "8486267677913836095",
+      "startTime": "2026-02-27T23:20:55.154Z",
+      "endTime": "2026-02-27T23:20:56.442Z",
       "params": "",
       "cacheStatus": "cache-miss",
       "status": 0
     },
     {
-      "taskId": "server:build",
-      "target": "build",
-      "projectName": "server",
-      "hash": "4817856141611711228",
-      "startTime": "2026-02-27T22:45:28.328Z",
-      "endTime": "2026-02-27T22:45:29.553Z",
-      "params": "",
-      "cacheStatus": "cache-miss",
-      "status": 0
-    },
-    {
-      "taskId": "client:build",
-      "target": "build",
+      "taskId": "client:lint",
+      "target": "lint",
       "projectName": "client",
-      "hash": "8725202962082699351",
-      "startTime": "2026-02-27T22:45:28.328Z",
-      "endTime": "2026-02-27T22:45:30.737Z",
+      "hash": "16148287104542828383",
+      "startTime": "2026-02-27T23:20:55.154Z",
+      "endTime": "2026-02-27T23:20:56.504Z",
+      "params": "",
+      "cacheStatus": "cache-miss",
+      "status": 0
+    },
+    {
+      "taskId": "server:lint",
+      "target": "lint",
+      "projectName": "server",
+      "hash": "8178942285806998054",
+      "startTime": "2026-02-27T23:20:55.154Z",
+      "endTime": "2026-02-27T23:20:56.533Z",
       "params": "",
       "cacheStatus": "cache-miss",
       "status": 0

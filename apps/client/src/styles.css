@@ -190,33 +190,54 @@ input {
 .projectile {
   position: absolute;
   transform: translate(-50%, -50%);
-  border-radius: 999px;
 }
 
-.meteor-light {
-  background: radial-gradient(circle at 24% 20%, #ffe8a9, #e9803b 65%, #6c2a11 100%);
-  box-shadow: 0 0 16px rgba(255, 141, 55, 0.52);
+.meteor {
   z-index: 6;
+  pointer-events: none;
+  transform-origin: center;
 }
 
-.meteor-heavy {
-  background: radial-gradient(circle at 28% 22%, #f1f5fb, #8895a6 60%, #313945 100%);
-  box-shadow: 0 0 16px rgba(184, 207, 236, 0.45);
-  z-index: 6;
+.meteor-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px rgba(255, 178, 107, 0.45));
+  user-select: none;
 }
 
-.meteor-core {
-  width: 45%;
-  height: 45%;
-  border-radius: 999px;
-  margin: 28%;
-  background: rgba(255, 245, 219, 0.7);
-  box-shadow: 0 0 8px rgba(255, 236, 192, 0.75);
+.game-over-panel {
+  width: min(92%, 420px);
+  border-radius: 14px;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  padding: 12px 14px;
+  text-align: right;
+}
+
+.game-over-panel h3,
+.game-over-panel h4 {
+  margin: 0;
+}
+
+.game-over-panel p {
+  margin: 8px 0 10px;
+}
+
+.game-over-panel .plain-list {
+  margin-top: 8px;
+}
+
+.game-over-panel .plain-list li {
+  border-top-color: rgba(245, 200, 91, 0.25);
+  font-size: 13px;
 }
 
 .projectile {
+  border-radius: 999px;
   background: radial-gradient(circle at 34% 35%, #abecff, #5cc7ff);
   box-shadow: 0 0 12px rgba(98, 212, 255, 0.75);
+  z-index: 6;
   z-index: 8;
 }
 

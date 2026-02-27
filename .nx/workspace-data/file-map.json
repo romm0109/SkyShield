@@ -5,90 +5,6 @@
   "nxJsonPlugins": [],
   "fileMap": {
     "projectFileMap": {
-      "server": [
-        {
-          "file": "apps/server/package.json",
-          "hash": "7596509417684988600",
-          "deps": [
-            "npm:@types/node",
-            "npm:socket.io-client",
-            "shared-types",
-            "npm:socket.io"
-          ]
-        },
-        {
-          "file": "apps/server/project.json",
-          "hash": "2420196100306185775"
-        },
-        {
-          "file": "apps/server/src/config/env.ts",
-          "hash": "9122803716707685774"
-        },
-        {
-          "file": "apps/server/src/events/lobbyEvents.integration.spec.ts",
-          "hash": "1933026294273896972"
-        },
-        {
-          "file": "apps/server/src/events/lobbyEvents.ts",
-          "hash": "13218344934095326754"
-        },
-        {
-          "file": "apps/server/src/events/shootEvents.integration.spec.ts",
-          "hash": "13865588531133639480"
-        },
-        {
-          "file": "apps/server/src/events/shootEvents.ts",
-          "hash": "16080972874343771764"
-        },
-        {
-          "file": "apps/server/src/events/startGame.integration.spec.ts",
-          "hash": "12353091412099639349"
-        },
-        {
-          "file": "apps/server/src/game-loop/matchLifecycle.spec.ts",
-          "hash": "7634790306520525713"
-        },
-        {
-          "file": "apps/server/src/game-loop/matchLifecycle.ts",
-          "hash": "3050633322314015515"
-        },
-        {
-          "file": "apps/server/src/game-loop/playerSlots.ts",
-          "hash": "3834042017373794728"
-        },
-        {
-          "file": "apps/server/src/game-loop/simulation.spec.ts",
-          "hash": "7262107245026465505"
-        },
-        {
-          "file": "apps/server/src/game-loop/simulation.ts",
-          "hash": "9689099508995722214"
-        },
-        {
-          "file": "apps/server/src/main.ts",
-          "hash": "896632302091442418"
-        },
-        {
-          "file": "apps/server/src/rooms/roomStore.spec.ts",
-          "hash": "5685247763979524898"
-        },
-        {
-          "file": "apps/server/src/rooms/roomStore.ts",
-          "hash": "7948680595794826702"
-        },
-        {
-          "file": "apps/server/src/run-integration-tests.ts",
-          "hash": "9980260420988654233"
-        },
-        {
-          "file": "apps/server/src/run-tests.ts",
-          "hash": "10191618453737347285"
-        },
-        {
-          "file": "apps/server/tsconfig.json",
-          "hash": "13585184342387267511"
-        }
-      ],
       "client": [
         {
           "file": "apps/client/index.html",
@@ -122,12 +38,20 @@
           "hash": "16823516012632871044"
         },
         {
+          "file": "apps/client/src/app/uiText.ts",
+          "hash": "11137261205213882136"
+        },
+        {
           "file": "apps/client/src/app/useSessionStore.ts",
-          "hash": "7765862006590319848"
+          "hash": "15465434887527517250"
         },
         {
           "file": "apps/client/src/assets/city.png",
           "hash": "8079893441639118791"
+        },
+        {
+          "file": "apps/client/src/assets/missile.png",
+          "hash": "2014210266736066233"
         },
         {
           "file": "apps/client/src/assets/players/bibi.png",
@@ -146,12 +70,20 @@
           "hash": "14204348399177297654"
         },
         {
+          "file": "apps/client/src/assets/small_missile.png",
+          "hash": "8190469092996577316"
+        },
+        {
+          "file": "apps/client/src/audio/sfx.ts",
+          "hash": "15198332968911014959"
+        },
+        {
           "file": "apps/client/src/game/MatchView.spec.ts",
-          "hash": "3880645486758796153"
+          "hash": "5543962439739562332"
         },
         {
           "file": "apps/client/src/game/MatchView.tsx",
-          "hash": "18074464981322395433"
+          "hash": "9217219447995909261"
         },
         {
           "file": "apps/client/src/game/characters.ts",
@@ -167,7 +99,7 @@
         },
         {
           "file": "apps/client/src/game/useMatchState.ts",
-          "hash": "3103301681546156815"
+          "hash": "17921503737623318836"
         },
         {
           "file": "apps/client/src/main.tsx",
@@ -191,7 +123,7 @@
         },
         {
           "file": "apps/client/src/pages/LobbyPage.tsx",
-          "hash": "5216797835698563762"
+          "hash": "12395389738562918028"
         },
         {
           "file": "apps/client/src/pages/NotFoundPage.tsx",
@@ -199,11 +131,11 @@
         },
         {
           "file": "apps/client/src/pages/OfflinePage.tsx",
-          "hash": "3566974375117891186"
+          "hash": "16217904513834221201"
         },
         {
           "file": "apps/client/src/pages/RoomPage.tsx",
-          "hash": "2112587940383738456"
+          "hash": "3481903457924710173"
         },
         {
           "file": "apps/client/src/pages/page-layout.css",
@@ -211,7 +143,7 @@
         },
         {
           "file": "apps/client/src/styles.css",
-          "hash": "17615724461965300111"
+          "hash": "4295555784682270891"
         },
         {
           "file": "apps/client/tsconfig.json",
@@ -267,9 +199,105 @@
           "file": "shared/types/tsconfig.tsbuildinfo",
           "hash": "16429186694916650898"
         }
+      ],
+      "server": [
+        {
+          "file": "apps/server/package.json",
+          "hash": "7596509417684988600",
+          "deps": [
+            "npm:@types/node",
+            "npm:socket.io-client",
+            "shared-types",
+            "npm:socket.io"
+          ]
+        },
+        {
+          "file": "apps/server/project.json",
+          "hash": "2420196100306185775"
+        },
+        {
+          "file": "apps/server/src/config/env.ts",
+          "hash": "9122803716707685774"
+        },
+        {
+          "file": "apps/server/src/events/lobbyEvents.integration.spec.ts",
+          "hash": "15406115938370942983"
+        },
+        {
+          "file": "apps/server/src/events/lobbyEvents.ts",
+          "hash": "12098012607200602941"
+        },
+        {
+          "file": "apps/server/src/events/rateLimit.spec.ts",
+          "hash": "9209392922534319945"
+        },
+        {
+          "file": "apps/server/src/events/rateLimit.ts",
+          "hash": "3063429841999964238"
+        },
+        {
+          "file": "apps/server/src/events/shootEvents.integration.spec.ts",
+          "hash": "13865588531133639480"
+        },
+        {
+          "file": "apps/server/src/events/shootEvents.ts",
+          "hash": "9287525325278981303"
+        },
+        {
+          "file": "apps/server/src/events/startGame.integration.spec.ts",
+          "hash": "12553350135445627216"
+        },
+        {
+          "file": "apps/server/src/game-loop/matchLifecycle.spec.ts",
+          "hash": "7634790306520525713"
+        },
+        {
+          "file": "apps/server/src/game-loop/matchLifecycle.ts",
+          "hash": "3050633322314015515"
+        },
+        {
+          "file": "apps/server/src/game-loop/playerSlots.ts",
+          "hash": "3834042017373794728"
+        },
+        {
+          "file": "apps/server/src/game-loop/simulation.spec.ts",
+          "hash": "7262107245026465505"
+        },
+        {
+          "file": "apps/server/src/game-loop/simulation.ts",
+          "hash": "9689099508995722214"
+        },
+        {
+          "file": "apps/server/src/main.ts",
+          "hash": "896632302091442418"
+        },
+        {
+          "file": "apps/server/src/rooms/roomStore.spec.ts",
+          "hash": "5685247763979524898"
+        },
+        {
+          "file": "apps/server/src/rooms/roomStore.ts",
+          "hash": "7948680595794826702"
+        },
+        {
+          "file": "apps/server/src/run-integration-tests.ts",
+          "hash": "4311598394471553817"
+        },
+        {
+          "file": "apps/server/src/run-tests.ts",
+          "hash": "6709983726758479398"
+        },
+        {
+          "file": "apps/server/tsconfig.json",
+          "hash": "13585184342387267511"
+        }
       ]
     },
     "nonProjectFiles": [
+      {
+        "file": ".agents/plans/hebrew-ui-audio-rematch-rate-limit.md",
+        "hash": "15883108887256622584"
+      },
       {
         "file": ".agents/plans/implement-authoritative-gameplay-loop-and-client-rendering.md",
         "hash": "5398233055598840461"
@@ -308,7 +336,7 @@
       },
       {
         "file": "IMPLEMENTED_SO_FAR.md",
-        "hash": "7330592078596820255"
+        "hash": "11380483317788165672"
       },
       {
         "file": "PRD.md",
@@ -316,7 +344,7 @@
       },
       {
         "file": "README.md",
-        "hash": "18394439162609196051"
+        "hash": "16923374507557190216"
       },
       {
         "file": "eslint.config.js",

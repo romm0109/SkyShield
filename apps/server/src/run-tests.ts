@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { RoomStore } from "./rooms/roomStore.js";
 import { buildLeaderboard, stepSimulation, type SimulationConfig } from "./game-loop/simulation.js";
+import { createSocketRateLimiter } from "./events/rateLimit.js";
 
 const store = new RoomStore(8);
 const room = store.createRoom({
@@ -106,5 +107,14 @@ if (!player) {
 }
 const leaderboard = buildLeaderboard([player], simResult.nextMatch.playerStats);
 assert.equal(leaderboard[0]?.score, 10);
+
+let nowMs = 1_000;
+const limiter = createSocketRateLimiter({ minIntervalMs: 400, now: () => nowMs });
+assert.equal(limiter.allow("socket-1", "create_room"), true);
+nowMs += 120;
+assert.equal(limiter.allow("socket-1", "create_room"), false);
+assert.equal(limiter.allow("socket-2", "create_room"), true);
+nowMs += 400;
+assert.equal(limiter.allow("socket-1", "create_room"), true);
 
 console.log("apps/server unit tests passed");
