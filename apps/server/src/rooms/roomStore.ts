@@ -1,4 +1,11 @@
-import type { LobbyState, MatchRuntimeState, PlayerState, RoomPhase, RoomState } from "@skyshield/shared-types";
+import type {
+  LobbyState,
+  MatchRuntimeState,
+  PlayerMatchStats,
+  PlayerState,
+  RoomPhase,
+  RoomState
+} from "@skyshield/shared-types";
 
 function generateRoomCode(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -36,7 +43,11 @@ function createInitialMatchState(runtime: RoomRuntimeDefaults): MatchRuntimeStat
     cityHp: runtime.cityHp,
     meteors: [],
     projectiles: [],
-    leaderboard: []
+    leaderboard: [],
+    playerStats: {},
+    nextMeteorId: 1,
+    nextProjectileId: 1,
+    lastMeteorSpawnMs: null
   };
 }
 
@@ -161,6 +172,34 @@ export class RoomStore {
 
     room.match = patchFn(room.match);
     return room;
+  }
+
+  public updatePlayer(
+    roomCode: string,
+    socketId: string,
+    patchFn: (player: PlayerState) => PlayerState
+  ): RoomState | undefined {
+    const room = this.rooms.get(roomCode);
+    if (!room) {
+      return undefined;
+    }
+    const player = room.players.get(socketId);
+    if (!player) {
+      return room;
+    }
+
+    room.players.set(socketId, patchFn(player));
+    return room;
+  }
+
+  public setPlayerStats(roomCode: string, socketId: string, stats: PlayerMatchStats): RoomState | undefined {
+    return this.updateMatchState(roomCode, (match) => ({
+      ...match,
+      playerStats: {
+        ...match.playerStats,
+        [socketId]: stats
+      }
+    }));
   }
 
   public isHost(roomCode: string, socketId: string): boolean {

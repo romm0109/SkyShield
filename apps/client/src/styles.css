@@ -4,27 +4,164 @@
 
 body {
   margin: 0;
-  background: #f3f5f7;
-  color: #0f1720;
-  font-family: "Segoe UI", system-ui, sans-serif;
+  background:
+    radial-gradient(circle at 20% 20%, #1f3f5b 0%, transparent 40%),
+    radial-gradient(circle at 85% 10%, #4f2f2f 0%, transparent 35%),
+    linear-gradient(180deg, #0a1320 0%, #0e1e2f 60%, #08101a 100%);
+  color: #f4f8ff;
+  font-family: "Trebuchet MS", "Gill Sans", "Noto Sans Hebrew", sans-serif;
+  min-height: 100vh;
 }
 
 button,
 input {
   font: inherit;
-  padding: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #53708f;
 }
 
 #app {
-  max-width: 520px;
+  max-width: 760px;
   margin: 0 auto;
 }
 
 .app-shell {
-  padding: 16px;
+  padding: 16px 14px 28px;
 }
 
 .controls {
   display: grid;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.match-shell {
+  display: grid;
+  gap: 12px;
+}
+
+.hud {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  background: rgba(9, 22, 37, 0.7);
+  border: 1px solid rgba(137, 176, 214, 0.5);
+  padding: 12px;
+  border-radius: 14px;
+}
+
+.hud-label {
+  margin: 0 0 4px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #b6cbe1;
+}
+
+.hud-value {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.hp-track {
+  height: 12px;
+  background: #1f2f41;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.hp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f8a132, #ff3d3d);
+}
+
+.playfield {
+  position: relative;
+  height: 420px;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid rgba(140, 173, 205, 0.55);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0) 20%),
+    linear-gradient(180deg, #10253a 0%, #081726 100%);
+}
+
+.overlay-pill {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(11, 20, 30, 0.85);
+  border: 1px solid rgba(236, 166, 79, 0.75);
+  padding: 6px 12px;
+  border-radius: 999px;
+  z-index: 20;
+}
+
+.hit-toast {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(255, 191, 78, 0.9);
+  color: #1b1200;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 999px;
+  z-index: 20;
+}
+
+.meteor,
+.projectile {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+}
+
+.meteor-light {
+  background: radial-gradient(circle at 25% 20%, #ffe9ad, #e8833a 65%, #7e3516 100%);
+  box-shadow: 0 0 16px rgba(255, 136, 39, 0.45);
+}
+
+.meteor-heavy {
+  background: radial-gradient(circle at 28% 24%, #eceff4, #95a0b1 55%, #3d4651 100%);
+  box-shadow: 0 0 16px rgba(181, 202, 229, 0.4);
+}
+
+.projectile {
+  background: radial-gradient(circle at 35% 35%, #9ee9ff, #4cc3ff);
+  box-shadow: 0 0 10px rgba(99, 213, 255, 0.7);
+}
+
+.leaderboard {
+  background: rgba(8, 20, 33, 0.75);
+  border: 1px solid rgba(140, 173, 205, 0.5);
+  border-radius: 14px;
+  padding: 10px 12px;
+}
+
+.leaderboard h2 {
+  margin: 2px 0 10px;
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.leaderboard-row {
+  display: flex;
+  justify-content: space-between;
   gap: 8px;
+  padding: 6px 0;
+  border-top: 1px solid rgba(126, 159, 191, 0.25);
+}
+
+@media (max-width: 640px) {
+  .hud {
+    grid-template-columns: 1fr;
+  }
+
+  .playfield {
+    height: 360px;
+  }
 }

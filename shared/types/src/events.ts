@@ -1,4 +1,4 @@
-import type { LobbyState, MeteorState, ProjectileState } from "./models.js";
+import type { LeaderboardEntry, LobbyState, MeteorState, ProjectileState } from "./models.js";
 
 export interface CreateRoomPayload {
   playerName: string;
@@ -46,12 +46,7 @@ export interface ServerToClientEvents {
     cityHp: number;
     meteors: MeteorState[];
     projectiles: ProjectileState[];
-    leaderboard: Array<{
-      id: string;
-      playerName: string;
-      score: number;
-      rank: number;
-    }>;
+    leaderboard: LeaderboardEntry[];
   }) => void;
   hit_confirmed: (payload: {
     meteorId: string;
@@ -80,7 +75,10 @@ export interface SocketData {
 }
 
 const NAME_PATTERN = /^.{2,16}$/;
-const ROOM_CODE_PATTERN = /^[A-Z0-9]{4,6}$/;
+const COORDINATE_MIN = 0;
+const COORDINATE_MAX = 2000;
+const CLIENT_TS_MAX = 9999999999999;
+export const ROOM_CODE_PATTERN = /^[A-Z0-9]{4,6}$/;
 
 export function isCreateRoomPayload(value: unknown): value is CreateRoomPayload {
   if (typeof value !== "object" || value === null) {
@@ -119,4 +117,31 @@ export function isStartGamePayload(value: unknown): value is StartGamePayload {
 
   const payload = value as Partial<StartGamePayload>;
   return typeof payload.roomCode === "string" && ROOM_CODE_PATTERN.test(payload.roomCode.trim().toUpperCase());
+}
+
+export function isShootPayload(value: unknown): value is ShootPayload {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const payload = value as Partial<ShootPayload>;
+  const hasValidRoomCode =
+    typeof payload.roomCode === "string" && ROOM_CODE_PATTERN.test(payload.roomCode.trim().toUpperCase());
+  const hasValidTargetX =
+    typeof payload.targetX === "number" &&
+    Number.isFinite(payload.targetX) &&
+    payload.targetX >= COORDINATE_MIN &&
+    payload.targetX <= COORDINATE_MAX;
+  const hasValidTargetY =
+    typeof payload.targetY === "number" &&
+    Number.isFinite(payload.targetY) &&
+    payload.targetY >= COORDINATE_MIN &&
+    payload.targetY <= COORDINATE_MAX;
+  const hasValidClientTs =
+    typeof payload.clientTs === "number" &&
+    Number.isInteger(payload.clientTs) &&
+    payload.clientTs > 0 &&
+    payload.clientTs <= CLIENT_TS_MAX;
+
+  return hasValidRoomCode && hasValidTargetX && hasValidTargetY && hasValidClientTs;
 }

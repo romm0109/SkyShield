@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { isCreateRoomPayload, isJoinRoomPayload, isStartGamePayload } from "./events.js";
+import { isCreateRoomPayload, isJoinRoomPayload, isShootPayload, isStartGamePayload } from "./events.js";
 
 describe("event payload guards", () => {
   it("accepts valid create_room payload", () => {
@@ -43,5 +43,52 @@ describe("event payload guards", () => {
 
   it("rejects empty start_game payload", () => {
     assert.equal(isStartGamePayload({}), false);
+  });
+
+  it("accepts valid shoot payload", () => {
+    assert.equal(
+      isShootPayload({
+        roomCode: "AB12",
+        targetX: 320,
+        targetY: 180,
+        clientTs: 1700000000000
+      }),
+      true
+    );
+  });
+
+  it("rejects shoot payload with out-of-range coordinates", () => {
+    assert.equal(
+      isShootPayload({
+        roomCode: "AB12",
+        targetX: -1,
+        targetY: 100,
+        clientTs: 1700000000000
+      }),
+      false
+    );
+  });
+
+  it("rejects shoot payload with missing client timestamp", () => {
+    assert.equal(
+      isShootPayload({
+        roomCode: "AB12",
+        targetX: 120,
+        targetY: 100
+      }),
+      false
+    );
+  });
+
+  it("rejects shoot payload with malformed room code", () => {
+    assert.equal(
+      isShootPayload({
+        roomCode: "ab-1",
+        targetX: 120,
+        targetY: 100,
+        clientTs: 1700000000000
+      }),
+      false
+    );
   });
 });

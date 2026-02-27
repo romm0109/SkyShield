@@ -1,6 +1,7 @@
 import { createServer } from "node:http";
 import { loadEnv } from "./config/env.js";
 import { registerLobbyEvents } from "./events/lobbyEvents.js";
+import { registerShootEvents } from "./events/shootEvents.js";
 import { MatchLifecycleManager } from "./game-loop/matchLifecycle.js";
 import { RoomStore } from "./rooms/roomStore.js";
 import { Server } from "socket.io";
@@ -33,20 +34,19 @@ const matchLifecycle = new MatchLifecycleManager(io, roomStore, env);
 io.on("connection", (socket) => {
   console.log(JSON.stringify({ event: "socket_connected", socketId: socket.id }));
   registerLobbyEvents(io, socket, roomStore, matchLifecycle);
+  registerShootEvents(socket, roomStore, matchLifecycle);
 
   socket.on("disconnect", () => {
     const roomCode = socket.data.roomCode;
-    if (roomCode) {
-      const room = roomStore.getRoom(roomCode);
-      if (room && room.phase !== "lobby") {
-        matchLifecycle.stopRoom(roomCode);
-      }
-    }
-
     const updatedRoom = roomStore.removePlayer(socket.id);
     console.log(
       JSON.stringify({ event: "socket_disconnected", socketId: socket.id, roomCode: socket.data.roomCode ?? null })
     );
+
+    if (!updatedRoom && roomCode) {
+      matchLifecycle.stopRoom(roomCode);
+      return;
+    }
 
     if (updatedRoom) {
       io.to(updatedRoom.roomCode).emit("lobby_state", {

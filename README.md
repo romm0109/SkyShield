@@ -65,14 +65,41 @@ shared/
 - Lobby state sync for connected players
 - Local profile persistence (`skyshield.playerName`, `skyshield.characterId`)
 - In-memory server room store (no DB)
+- Authoritative server gameplay loop:
+  - Meteor spawn/movement simulation
+  - Player shooting with server-side validation/throttling
+  - Collision scoring + live leaderboard
+  - City HP damage + `city_destroyed` game-over path
+- Client in-match renderer (HUD + live playfield + click/tap shooting)
 
 ## Known Limitations
 
-- No gameplay loop or Phaser scenes yet
+- Rendering is lightweight DOM-based (Phaser integration is still pending)
 - No persistence beyond in-memory room state
 - Host handoff is basic (next connected player)
+
+## Gameplay Controls
+
+- Create or join a room from the lobby controls.
+- Host clicks `Start Game`.
+- During match, click/tap inside the playfield to fire at target coordinates.
+- Reload throttle is server-enforced at `400ms` between shots per socket.
+
+## Simulation Environment Variables
+
+- `PLAYFIELD_WIDTH` (default `480`)
+- `METEOR_GROUND_Y` (default `720`)
+- `METEOR_SPAWN_INTERVAL_MS` (default `900`)
+- `METEOR_LIGHT_SPEED` (default `130`)
+- `METEOR_HEAVY_SPEED` (default `80`)
+- `METEOR_LIGHT_RADIUS` (default `24`)
+- `METEOR_HEAVY_RADIUS` (default `34`)
+- `METEOR_HEAVY_SPAWN_EVERY` (default `4`)
+- `PROJECTILE_SPEED` (default `950`)
+- `PROJECTILE_RADIUS` (default `10`)
+- `PROJECTILE_DESPAWN_Y` (default `-60`)
 
 ## Implementation Notes
 
 - Event names are locked in snake_case according to PRD contracts.
-- The client currently includes a UI shell and networking baseline; Phaser bootstrap is intentionally deferred.
+- The client now includes in-game rendering with authoritative server sync; Phaser bootstrap remains intentionally deferred.

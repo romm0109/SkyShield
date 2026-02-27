@@ -41,7 +41,18 @@ describe("lobby event integration", () => {
       MAX_PLAYERS_PER_ROOM: 8,
       MATCH_DURATION_SECONDS: 2,
       CITY_HP_DEFAULT: 20,
-      TICK_RATE_HZ: 10
+      TICK_RATE_HZ: 10,
+      PLAYFIELD_WIDTH: 480,
+      METEOR_GROUND_Y: 720,
+      METEOR_SPAWN_INTERVAL_MS: 99999,
+      METEOR_LIGHT_SPEED: 130,
+      METEOR_HEAVY_SPEED: 80,
+      METEOR_LIGHT_RADIUS: 24,
+      METEOR_HEAVY_RADIUS: 34,
+      METEOR_HEAVY_SPAWN_EVERY: 4,
+      PROJECTILE_SPEED: 950,
+      PROJECTILE_RADIUS: 10,
+      PROJECTILE_DESPAWN_Y: -60
     });
 
     io.on("connection", (socket) => registerLobbyEvents(io!, socket, roomStore, lifecycle));
@@ -93,7 +104,18 @@ describe("lobby event integration", () => {
       MAX_PLAYERS_PER_ROOM: 8,
       MATCH_DURATION_SECONDS: 2,
       CITY_HP_DEFAULT: 20,
-      TICK_RATE_HZ: 10
+      TICK_RATE_HZ: 10,
+      PLAYFIELD_WIDTH: 480,
+      METEOR_GROUND_Y: 720,
+      METEOR_SPAWN_INTERVAL_MS: 99999,
+      METEOR_LIGHT_SPEED: 130,
+      METEOR_HEAVY_SPEED: 80,
+      METEOR_LIGHT_RADIUS: 24,
+      METEOR_HEAVY_RADIUS: 34,
+      METEOR_HEAVY_SPAWN_EVERY: 4,
+      PROJECTILE_SPEED: 950,
+      PROJECTILE_RADIUS: 10,
+      PROJECTILE_DESPAWN_Y: -60
     });
 
     io.on("connection", (socket) => registerLobbyEvents(io!, socket, roomStore, lifecycle));

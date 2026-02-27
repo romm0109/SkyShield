@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { LobbyState } from "@skyshield/shared-types";
+import { MatchView } from "../game/MatchView.js";
+import { useMatchState } from "../game/useMatchState.js";
 import { connectSocket, getSocket } from "../net/socket.js";
 
 const PLAYER_NAME_KEY = "skyshield.playerName";
@@ -19,6 +21,7 @@ export function App() {
   const [roomCode, setRoomCode] = useState("");
   const [status, setStatus] = useState("Disconnected");
   const [lobbyState, setLobbyState] = useState<LobbyState | null>(null);
+  const matchState = useMatchState(lobbyState, roomCode);
 
   useEffect(() => {
     const socket = getSocket();
@@ -78,6 +81,15 @@ export function App() {
     });
   };
 
+  const startGame = (): void => {
+    const activeRoomCode = matchState.roomCode || roomCode.trim().toUpperCase();
+    if (!activeRoomCode) {
+      setStatus("Missing room code");
+      return;
+    }
+    getSocket().emit("start_game", { roomCode: activeRoomCode });
+  };
+
   return (
     <main className="app-shell">
       <p>{status}</p>
@@ -104,8 +116,22 @@ export function App() {
         <button type="button" onClick={joinRoom}>
           Join Room
         </button>
+        <button type="button" onClick={startGame} disabled={!matchState.roomCode}>
+          Start Game
+        </button>
       </div>
-      <pre>{lobbyState ? JSON.stringify(lobbyState, null, 2) : "Lobby state will appear here."}</pre>
+      {matchState.phase === "in_game" || matchState.phase === "countdown" || matchState.phase === "game_over" ? (
+        <MatchView
+          phase={matchState.phase}
+          roomCode={matchState.roomCode}
+          match={matchState.match}
+          countdownSeconds={matchState.countdownSeconds}
+          gameOver={matchState.gameOver}
+          lastHit={matchState.lastHit}
+        />
+      ) : (
+        <pre>{matchState.lobbyState ? JSON.stringify(matchState.lobbyState, null, 2) : "Lobby state will appear here."}</pre>
+      )}
     </main>
   );
 }

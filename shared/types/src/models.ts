@@ -1,5 +1,6 @@
 export type RoomCode = string;
 export type RoomPhase = "lobby" | "countdown" | "in_game" | "game_over";
+export type MeteorType = "light" | "heavy";
 
 export interface PlayerState {
   id: string;
@@ -16,17 +17,34 @@ export interface LobbyState {
 
 export interface MeteorState {
   id: string;
+  type: MeteorType;
   x: number;
   y: number;
+  radius: number;
+  speed: number;
   hp: number;
+  maxHp: number;
+  createdAtMs: number;
 }
 
 export interface ProjectileState {
   id: string;
+  ownerId: string;
   x: number;
   y: number;
   vx: number;
   vy: number;
+  radius: number;
+  speed: number;
+  targetX: number;
+  targetY: number;
+  createdAtMs: number;
+}
+
+export interface PlayerMatchStats {
+  shotsFired: number;
+  hits: number;
+  accuracy: number;
 }
 
 export interface LeaderboardEntry {
@@ -34,6 +52,9 @@ export interface LeaderboardEntry {
   playerName: string;
   score: number;
   rank: number;
+  shotsFired: number;
+  hits: number;
+  accuracy: number;
 }
 
 export interface MatchRuntimeState {
@@ -43,6 +64,10 @@ export interface MatchRuntimeState {
   meteors: MeteorState[];
   projectiles: ProjectileState[];
   leaderboard: LeaderboardEntry[];
+  playerStats: Record<string, PlayerMatchStats>;
+  nextMeteorId: number;
+  nextProjectileId: number;
+  lastMeteorSpawnMs: number | null;
 }
 
 export interface RoomState {
