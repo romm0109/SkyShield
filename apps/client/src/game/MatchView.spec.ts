@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { toPercentX, toPercentY } from "./MatchView.js";
+import { normalizeRoomCode } from "../app/useSessionStore.js";
 
 describe("MatchView coordinate helpers", () => {
   it("converts X coordinate to percentage", () => {
@@ -8,5 +9,11 @@ describe("MatchView coordinate helpers", () => {
 
   it("converts Y coordinate to percentage", () => {
     expect(toPercentY(360)).toBe("50%");
+  });
+});
+
+describe("session helper utilities", () => {
+  it("normalizes room code to uppercase trimmed value", () => {
+    expect(normalizeRoomCode(" ab12 ")).toBe("AB12");
   });
 });

@@ -80,9 +80,13 @@ shared/
 
 ## Gameplay Controls
 
-- Create or join a room from the lobby controls.
-- Host clicks `Start Game`.
-- During match, click/tap inside the playfield to fire at target coordinates.
+- Lobby page (`/`):
+  - Set profile (`playerName`, `characterId`), then create or join a room.
+  - Successful create/join navigates to `/room/:roomCode`.
+- Room page (`/room/:roomCode`):
+  - Shows room roster and host controls.
+  - Host clicks `Start Game`.
+  - During match, click/tap inside the playfield to fire at target coordinates.
 - Reload throttle is server-enforced at `400ms` between shots per socket.
 
 ## Simulation Environment Variables

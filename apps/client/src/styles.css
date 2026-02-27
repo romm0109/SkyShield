@@ -1,91 +1,155 @@
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=IBM+Plex+Sans+Hebrew:wght@400;500;700&display=swap");
+@import "./pages/page-layout.css";
+
+:root {
+  --bg-0: #060d17;
+  --bg-1: #0d1f33;
+  --bg-2: #143453;
+  --panel: rgba(8, 18, 30, 0.78);
+  --panel-soft: rgba(13, 31, 50, 0.68);
+  --line: rgba(143, 190, 236, 0.35);
+  --line-strong: rgba(159, 213, 255, 0.72);
+  --text: #edf5ff;
+  --muted: #98b4cf;
+  --accent: #f5c85b;
+  --accent-strong: #f37d3e;
+  --danger: #ef5c5c;
+  --ok: #58d99a;
+  --radius-lg: 18px;
+  --radius-md: 14px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --shadow-card: 0 16px 40px rgba(2, 8, 14, 0.45);
+}
+
 * {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  background:
-    radial-gradient(circle at 20% 20%, #1f3f5b 0%, transparent 40%),
-    radial-gradient(circle at 85% 10%, #4f2f2f 0%, transparent 35%),
-    linear-gradient(180deg, #0a1320 0%, #0e1e2f 60%, #08101a 100%);
-  color: #f4f8ff;
-  font-family: "Trebuchet MS", "Gill Sans", "Noto Sans Hebrew", sans-serif;
   min-height: 100vh;
+  color: var(--text);
+  font-family: "IBM Plex Sans Hebrew", "Segoe UI", sans-serif;
+  background:
+    radial-gradient(120% 70% at 12% 8%, #1b476a 0%, transparent 55%),
+    radial-gradient(90% 60% at 88% 16%, #4b2d2d 0%, transparent 58%),
+    linear-gradient(168deg, var(--bg-0) 0%, var(--bg-1) 52%, #09192a 100%);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.25;
+  background-image: linear-gradient(transparent 96%, rgba(120, 170, 218, 0.1) 100%);
+  background-size: 100% 6px;
+}
+
+#app {
+  max-width: 880px;
+  margin: 0 auto;
 }
 
 button,
 input {
   font: inherit;
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid #53708f;
 }
 
-#app {
-  max-width: 760px;
-  margin: 0 auto;
+button {
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: linear-gradient(115deg, rgba(245, 200, 91, 0.22), rgba(243, 125, 62, 0.2));
+  color: var(--text);
+  padding: 10px 16px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: transform 120ms ease, border-color 120ms ease, filter 120ms ease;
 }
 
-.app-shell {
-  padding: 16px 14px 28px;
+button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: var(--accent);
 }
 
-.controls {
-  display: grid;
-  gap: 10px;
-  margin-bottom: 16px;
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(10, 20, 32, 0.8);
+  color: var(--text);
+  padding: 11px 12px;
+}
+
+.card {
+  background: linear-gradient(180deg, var(--panel-soft), var(--panel));
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(4px);
 }
 
 .match-shell {
   display: grid;
-  gap: 12px;
+  gap: var(--space-3);
+  padding: var(--space-4);
 }
 
 .hud {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-  background: rgba(9, 22, 37, 0.7);
-  border: 1px solid rgba(137, 176, 214, 0.5);
-  padding: 12px;
-  border-radius: 14px;
+  gap: var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: rgba(12, 26, 41, 0.65);
+  padding: var(--space-3);
 }
 
 .hud-label {
   margin: 0 0 4px;
-  font-size: 12px;
-  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #b6cbe1;
+  letter-spacing: 0.1em;
+  font-size: 11px;
+  color: var(--muted);
 }
 
 .hud-value {
   margin: 0;
   font-size: 22px;
-  font-weight: 700;
+  font-weight: 800;
+  font-family: "Bricolage Grotesque", "IBM Plex Sans Hebrew", sans-serif;
 }
 
 .hp-track {
-  height: 12px;
-  background: #1f2f41;
+  height: 11px;
   border-radius: 999px;
+  background: rgba(32, 48, 65, 0.8);
   overflow: hidden;
 }
 
 .hp-fill {
   height: 100%;
-  background: linear-gradient(90deg, #f8a132, #ff3d3d);
+  background: linear-gradient(90deg, #f2cc5a, #ef5c5c);
 }
 
 .playfield {
   position: relative;
   height: 420px;
   overflow: hidden;
-  border-radius: 16px;
-  border: 1px solid rgba(140, 173, 205, 0.55);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(137, 182, 226, 0.45);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0) 20%),
-    linear-gradient(180deg, #10253a 0%, #081726 100%);
+    radial-gradient(circle at 10% 15%, rgba(132, 197, 255, 0.22), transparent 48%),
+    linear-gradient(180deg, #112a40 0%, #0a1a2a 100%);
 }
 
 .overlay-pill {
@@ -93,22 +157,22 @@ input {
   top: 12px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(11, 20, 30, 0.85);
-  border: 1px solid rgba(236, 166, 79, 0.75);
-  padding: 6px 12px;
+  background: rgba(6, 16, 26, 0.88);
+  border: 1px solid rgba(245, 200, 91, 0.78);
   border-radius: 999px;
+  padding: 6px 12px;
   z-index: 20;
 }
 
 .hit-toast {
   position: absolute;
-  bottom: 12px;
   right: 12px;
-  background: rgba(255, 191, 78, 0.9);
-  color: #1b1200;
+  bottom: 12px;
+  background: rgba(245, 200, 91, 0.93);
+  color: #241400;
+  border-radius: 999px;
   font-weight: 700;
   padding: 6px 10px;
-  border-radius: 999px;
   z-index: 20;
 }
 
@@ -120,40 +184,45 @@ input {
 }
 
 .meteor-light {
-  background: radial-gradient(circle at 25% 20%, #ffe9ad, #e8833a 65%, #7e3516 100%);
-  box-shadow: 0 0 16px rgba(255, 136, 39, 0.45);
+  background: radial-gradient(circle at 24% 20%, #ffe8a9, #e9803b 65%, #6c2a11 100%);
+  box-shadow: 0 0 16px rgba(255, 141, 55, 0.52);
 }
 
 .meteor-heavy {
-  background: radial-gradient(circle at 28% 24%, #eceff4, #95a0b1 55%, #3d4651 100%);
-  box-shadow: 0 0 16px rgba(181, 202, 229, 0.4);
+  background: radial-gradient(circle at 28% 22%, #f1f5fb, #8895a6 60%, #313945 100%);
+  box-shadow: 0 0 16px rgba(184, 207, 236, 0.45);
 }
 
 .projectile {
-  background: radial-gradient(circle at 35% 35%, #9ee9ff, #4cc3ff);
-  box-shadow: 0 0 10px rgba(99, 213, 255, 0.7);
+  background: radial-gradient(circle at 34% 35%, #abecff, #5cc7ff);
+  box-shadow: 0 0 12px rgba(98, 212, 255, 0.75);
 }
 
 .leaderboard {
-  background: rgba(8, 20, 33, 0.75);
-  border: 1px solid rgba(140, 173, 205, 0.5);
-  border-radius: 14px;
-  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: rgba(10, 24, 37, 0.64);
+  padding: var(--space-3);
 }
 
 .leaderboard h2 {
-  margin: 2px 0 10px;
+  margin: 0 0 var(--space-2);
   font-size: 15px;
-  letter-spacing: 0.06em;
   text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.leaderboard-empty {
+  margin: 0;
+  color: var(--muted);
 }
 
 .leaderboard-row {
   display: flex;
   justify-content: space-between;
-  gap: 8px;
-  padding: 6px 0;
-  border-top: 1px solid rgba(126, 159, 191, 0.25);
+  gap: var(--space-2);
+  padding: 7px 0;
+  border-top: 1px solid rgba(143, 190, 236, 0.24);
 }
 
 @media (max-width: 640px) {
@@ -163,5 +232,11 @@ input {
 
   .playfield {
     height: 360px;
+  }
+}
+
+@media (max-width: 360px) {
+  .playfield {
+    height: 330px;
   }
 }

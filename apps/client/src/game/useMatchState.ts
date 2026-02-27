@@ -36,21 +36,18 @@ export function useMatchState(initialLobbyState: LobbyState | null, initialRoomC
 
   useEffect(() => {
     setRoomCode(initialRoomCode);
+    if (!initialRoomCode) {
+      setPhase("lobby");
+      setCountdownSeconds(null);
+      setGameOver(null);
+      setLastHit(null);
+      setMatch(EMPTY_MATCH);
+    }
   }, [initialRoomCode]);
 
   useEffect(() => {
     const socket = getSocket();
 
-    const onRoomCreated = (payload: { roomCode: string }) => {
-      setRoomCode(payload.roomCode);
-      setPhase("lobby");
-      setGameOver(null);
-    };
-    const onLobbyState = (payload: LobbyState) => {
-      setLobbyState(payload);
-      setRoomCode(payload.roomCode);
-      setPhase((current) => (current === "in_game" || current === "countdown" ? current : "lobby"));
-    };
     const onCountdown = (payload: { seconds: number }) => {
       setCountdownSeconds(payload.seconds);
       setPhase("countdown");
@@ -69,16 +66,12 @@ export function useMatchState(initialLobbyState: LobbyState | null, initialRoomC
       setCountdownSeconds(null);
     };
 
-    socket.on("room_created", onRoomCreated);
-    socket.on("lobby_state", onLobbyState);
     socket.on("game_countdown", onCountdown);
     socket.on("game_state", onGameState);
     socket.on("hit_confirmed", onHitConfirmed);
     socket.on("game_over", onGameOver);
 
     return () => {
-      socket.off("room_created", onRoomCreated);
-      socket.off("lobby_state", onLobbyState);
       socket.off("game_countdown", onCountdown);
       socket.off("game_state", onGameState);
       socket.off("hit_confirmed", onHitConfirmed);

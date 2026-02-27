@@ -42,7 +42,7 @@ export function MatchView({ phase, roomCode, match, countdownSeconds, gameOver, 
   };
 
   return (
-    <section className="match-shell">
+    <section className="match-shell card">
       <header className="hud">
         <div>
           <p className="hud-label">Time</p>
@@ -97,16 +97,20 @@ export function MatchView({ phase, roomCode, match, countdownSeconds, gameOver, 
 
       <aside className="leaderboard">
         <h2>Leaderboard</h2>
-        {topLeaderboard.map((entry) => (
-          <div className="leaderboard-row" key={entry.id}>
-            <span>
-              #{entry.rank} {entry.playerName}
-            </span>
-            <span>
-              {entry.score} pts ({entry.accuracy}%)
-            </span>
-          </div>
-        ))}
+        {topLeaderboard.length === 0 ? (
+          <p className="leaderboard-empty">No scores yet.</p>
+        ) : (
+          topLeaderboard.map((entry) => (
+            <div className="leaderboard-row" key={entry.id}>
+              <span>
+                #{entry.rank} {entry.playerName}
+              </span>
+              <span>
+                {entry.score} pts ({entry.accuracy}%)
+              </span>
+            </div>
+          ))
+        )}
       </aside>
     </section>
   );
