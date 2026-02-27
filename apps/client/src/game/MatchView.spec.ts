@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { clampPlayfieldTarget, toGameOverReasonText, toGameOverResultText, toPercentX, toPercentY } from "./MatchView.js";
+import {
+  clampPlayfieldTarget,
+  toGameOverReasonText,
+  toGameOverResultText,
+  toPercentX,
+  toPercentY,
+  toSimulationTarget
+} from "./MatchView.js";
 import { toPlayerSlotStyle, toProjectileOwnerClass } from "./playerVisuals.js";
 import { normalizeRoomCode } from "../app/useSessionStore.js";
 
@@ -15,6 +22,17 @@ describe("MatchView coordinate helpers", () => {
   it("clamps target coordinates to playfield bounds", () => {
     expect(clampPlayfieldTarget(-10, 900)).toEqual({ targetX: 0, targetY: 720 });
     expect(clampPlayfieldTarget(490, -3)).toEqual({ targetX: 480, targetY: 0 });
+  });
+
+  it("maps pointer coordinates into simulation space", () => {
+    expect(
+      toSimulationTarget(400, 300, {
+        left: 100,
+        top: 100,
+        width: 600,
+        height: 900
+      })
+    ).toEqual({ targetX: 240, targetY: 160 });
   });
 
   it("maps slot coordinates to CSS style values", () => {

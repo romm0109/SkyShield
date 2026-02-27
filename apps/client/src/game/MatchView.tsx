@@ -7,7 +7,14 @@ import lightMissileImage from "../assets/small_missile.png";
 import { uiText } from "../app/uiText.js";
 import { playHit, playShoot } from "../audio/sfx.js";
 import { getCharacterById } from "./characters.js";
-import { toPercentX as toVisualPercentX, toPercentY as toVisualPercentY, toPlayerSlotStyle, toProjectileOwnerClass } from "./playerVisuals.js";
+import {
+  PLAYFIELD_HEIGHT,
+  PLAYFIELD_WIDTH,
+  toPercentX as toVisualPercentX,
+  toPercentY as toVisualPercentY,
+  toPlayerSlotStyle,
+  toProjectileOwnerClass
+} from "./playerVisuals.js";
 import type { GameOverSnapshot, HitConfirmedSnapshot, MatchSnapshot, MatchPhase } from "./types.js";
 
 interface MatchViewProps {
@@ -29,8 +36,12 @@ export interface ShotPayload {
 }
 
 export const SHOT_COOLDOWN_MS = 400;
-const PLAYFIELD_WIDTH = 480;
-const PLAYFIELD_HEIGHT = 720;
+interface RectLike {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
 
 export function toPercentX(x: number): string {
   return toVisualPercentX(x);
@@ -45,6 +56,14 @@ export function clampPlayfieldTarget(targetX: number, targetY: number): { target
     targetX: Math.max(0, Math.min(PLAYFIELD_WIDTH, targetX)),
     targetY: Math.max(0, Math.min(PLAYFIELD_HEIGHT, targetY))
   };
+}
+
+export function toSimulationTarget(clientX: number, clientY: number, rect: RectLike): { targetX: number; targetY: number } {
+  const rectWidth = rect.width > 0 ? rect.width : PLAYFIELD_WIDTH;
+  const rectHeight = rect.height > 0 ? rect.height : PLAYFIELD_HEIGHT;
+  const targetX = ((clientX - rect.left) / rectWidth) * PLAYFIELD_WIDTH;
+  const targetY = ((clientY - rect.top) / rectHeight) * PLAYFIELD_HEIGHT;
+  return clampPlayfieldTarget(targetX, targetY);
 }
 
 export function toGameOverReasonText(gameOver: GameOverSnapshot): string {
@@ -142,7 +161,8 @@ export function MatchView({
         className="playfield"
         onPointerDown={(event) => {
           const rect = event.currentTarget.getBoundingClientRect();
-          fireShot(event.clientX - rect.left, event.clientY - rect.top);
+          const target = toSimulationTarget(event.clientX, event.clientY, rect);
+          fireShot(target.targetX, target.targetY);
         }}
       >
         <img className="city-layer" src={cityImage} alt="" aria-hidden />
@@ -181,8 +201,13 @@ export function MatchView({
         {match.meteors.map((meteor) => (
           <div
             key={meteor.id}
-            className="meteor"
-            style={{ left: toPercentX(meteor.x), top: toPercentY(meteor.y), width: meteor.radius * 2, height: meteor.radius * 2 }}
+            className={`meteor ${meteor.type === "light" ? "meteor-light" : "meteor-heavy"}`}
+            style={{
+              left: toPercentX(meteor.x),
+              top: toPercentY(meteor.y),
+              width: meteor.radius * 2 * (meteor.type === "light" ? 1.5 : 1.2),
+              height: meteor.radius * 2 * (meteor.type === "light" ? 1.4 : 1.2)
+            }}
           >
             <img
               className="meteor-image"
