@@ -41,8 +41,6 @@ export interface SimulationResult {
   hitEvents: HitConfirmedEvent[];
 }
 
-const PROJECTILE_START_OFFSET_Y = 24;
-
 function createMeteor(match: MatchRuntimeState, config: SimulationConfig, spawnIndex: number, nowMs: number): MeteorState {
   const nextId = match.nextMeteorId + spawnIndex;
   const isHeavy = nextId % config.meteorHeavySpawnEvery === 0;
@@ -83,20 +81,23 @@ function spawnProjectiles(
   nowMs: number,
   playerDeltas: Record<string, PlayerDelta>
 ): ProjectileState[] {
-  const originX = config.playfieldWidth / 2;
-  const originY = config.groundY - PROJECTILE_START_OFFSET_Y;
+  const originByPlayerId = new Map(room.match.playerSlots.map((slot) => [slot.playerId, { x: slot.x, y: slot.y }]));
 
   const projectiles: ProjectileState[] = [];
   for (const shot of queuedShots) {
     if (!room.players.has(shot.playerId)) {
       continue;
     }
+    const origin = originByPlayerId.get(shot.playerId);
+    if (!origin) {
+      continue;
+    }
 
     const delta = withPlayerDelta(playerDeltas, shot.playerId);
     delta.shotsDelta += 1;
 
-    const dx = shot.targetX - originX;
-    const dy = shot.targetY - originY;
+    const dx = shot.targetX - origin.x;
+    const dy = shot.targetY - origin.y;
     const magnitude = Math.hypot(dx, dy) || 1;
     const vx = (dx / magnitude) * config.projectileSpeed;
     const vy = (dy / magnitude) * config.projectileSpeed;
@@ -105,8 +106,8 @@ function spawnProjectiles(
     projectiles.push({
       id,
       ownerId: shot.playerId,
-      x: originX,
-      y: originY,
+      x: origin.x,
+      y: origin.y,
       vx,
       vy,
       radius: config.projectileRadius,

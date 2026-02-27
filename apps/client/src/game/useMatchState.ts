@@ -8,6 +8,7 @@ const EMPTY_MATCH: MatchSnapshot = {
   cityHp: 0,
   meteors: [],
   projectiles: [],
+  playerSlots: [],
   leaderboard: []
 };
 

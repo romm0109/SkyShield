@@ -33,6 +33,10 @@ function createRoom(): RoomState {
       cityHp: 5,
       meteors: [],
       projectiles: [],
+      playerSlots: [
+        { playerId: "p1", x: 160, y: 696, lane: 0 },
+        { playerId: "p2", x: 320, y: 696, lane: 1 }
+      ],
       leaderboard: [],
       playerStats: {
         p1: { shotsFired: 0, hits: 0, accuracy: 0 },
@@ -128,6 +132,72 @@ describe("stepSimulation", () => {
 
     const result = stepSimulation(room, 100, 100, [], config);
     assert.equal(result.nextMatch.cityHp, 4);
+    assert.equal(result.nextMatch.meteors.length, 0);
+  });
+
+  it("spawns projectiles from each shooter slot origin", () => {
+    const room = createRoom();
+    const result = stepSimulation(
+      room,
+      16,
+      100,
+      [
+        { playerId: "p1", targetX: 150, targetY: 120, clientTs: 1 },
+        { playerId: "p2", targetX: 330, targetY: 120, clientTs: 2 }
+      ],
+      config
+    );
+
+    assert.equal(result.nextMatch.projectiles.length, 2);
+    const projectileOne = result.nextMatch.projectiles.find((projectile) => projectile.ownerId === "p1");
+    const projectileTwo = result.nextMatch.projectiles.find((projectile) => projectile.ownerId === "p2");
+    assert.equal(projectileOne?.x, 160);
+    assert.equal(projectileOne?.y, 696);
+    assert.equal(projectileTwo?.x, 320);
+    assert.equal(projectileTwo?.y, 696);
+  });
+
+  it("allows different shooters to score in the same simulation step", () => {
+    const room = createRoom();
+    room.match.meteors = [
+      {
+        id: "m-1",
+        type: "light",
+        x: 160,
+        y: 696,
+        radius: 20,
+        speed: 0,
+        hp: 1,
+        maxHp: 1,
+        createdAtMs: 0
+      },
+      {
+        id: "m-2",
+        type: "light",
+        x: 320,
+        y: 696,
+        radius: 20,
+        speed: 0,
+        hp: 1,
+        maxHp: 1,
+        createdAtMs: 0
+      }
+    ];
+
+    const result = stepSimulation(
+      room,
+      16,
+      100,
+      [
+        { playerId: "p1", targetX: 160, targetY: 696, clientTs: 1 },
+        { playerId: "p2", targetX: 320, targetY: 696, clientTs: 2 }
+      ],
+      config
+    );
+
+    assert.equal(result.playerDeltas.p1?.scoreDelta, 10);
+    assert.equal(result.playerDeltas.p2?.scoreDelta, 10);
+    assert.equal(result.hitEvents.length, 2);
     assert.equal(result.nextMatch.meteors.length, 0);
   });
 });

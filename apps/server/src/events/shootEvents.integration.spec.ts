@@ -22,12 +22,38 @@ function onceWithTimeout<T>(
   });
 }
 
+function waitForEventWhere<T>(
+  socket: ClientSocket<ServerToClientEvents, ClientToServerEvents>,
+  event: keyof ServerToClientEvents,
+  predicate: (payload: T) => boolean,
+  timeoutMs = 3000
+): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      socket.off(event, onEvent);
+      reject(new Error(`Timeout waiting for ${String(event)} predicate`));
+    }, timeoutMs);
+
+    const onEvent = (payload: unknown) => {
+      const typedPayload = payload as T;
+      if (!predicate(typedPayload)) {
+        return;
+      }
+      clearTimeout(timeout);
+      socket.off(event, onEvent);
+      resolve(typedPayload);
+    };
+
+    socket.on(event, onEvent);
+  });
+}
+
 function createEnv() {
   return {
     PORT: 3000,
     CLIENT_ORIGIN: "*",
     MAX_PLAYERS_PER_ROOM: 8,
-    MATCH_DURATION_SECONDS: 2,
+    MATCH_DURATION_SECONDS: 5,
     CITY_HP_DEFAULT: 20,
     TICK_RATE_HZ: 30,
     PLAYFIELD_WIDTH: 480,
@@ -45,7 +71,7 @@ function createEnv() {
 }
 
 export async function runShootEventsIntegrationSuite(): Promise<void> {
-  const roomStore = new RoomStore(8, { matchDurationSeconds: 2, cityHp: 20 });
+  const roomStore = new RoomStore(8, { matchDurationSeconds: 5, cityHp: 20 });
   const httpServer = createServer();
   const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(httpServer, {
     cors: { origin: "*" }
@@ -64,6 +90,7 @@ export async function runShootEventsIntegrationSuite(): Promise<void> {
 
   const url = `http://127.0.0.1:${address.port}`;
   const host = createClient(url, { autoConnect: false });
+  const guest = createClient(url, { autoConnect: false });
 
   try {
     const roomCode = await new Promise<string>((resolve, reject) => {
@@ -74,6 +101,18 @@ export async function runShootEventsIntegrationSuite(): Promise<void> {
       setTimeout(() => reject(new Error("Timeout waiting for room_created")), 3000);
     });
 
+    await new Promise<void>((resolve, reject) => {
+      guest.on("connect", () => guest.emit("join_room", { roomCode, playerName: "Guest", characterId: "pilot" }));
+      guest.on("lobby_state", (payload) => {
+        if (payload.roomCode === roomCode && payload.players.length === 2) {
+          resolve();
+        }
+      });
+      guest.on("error_event", reject);
+      guest.connect();
+      setTimeout(() => reject(new Error("Timeout waiting for guest join")), 3000);
+    });
+
     host.emit("shoot", { roomCode, targetX: -20, targetY: 100, clientTs: Date.now() });
     const invalidPayload = await onceWithTimeout<{ code: string }>(host, "error_event");
     assert.equal(invalidPayload.code, "INVALID_PAYLOAD");
@@ -82,9 +121,18 @@ export async function runShootEventsIntegrationSuite(): Promise<void> {
     const notInGame = await onceWithTimeout<{ code: string }>(host, "error_event");
     assert.equal(notInGame.code, "INVALID_PHASE");
 
-    const firstGameState = onceWithTimeout<{ remainingSeconds: number }>(host, "game_state", 6000);
+    const firstGameState = onceWithTimeout<{
+      remainingSeconds: number;
+      playerSlots: Array<{ playerId: string; x: number; y: number }>;
+    }>(host, "game_state", 6000);
     host.emit("start_game", { roomCode });
-    await firstGameState;
+    const initialState = await firstGameState;
+    assert.equal(initialState.playerSlots.length, 2);
+    const hostSlot = initialState.playerSlots.find((slot) => slot.playerId === host.id);
+    const guestSlot = initialState.playerSlots.find((slot) => slot.playerId === guest.id);
+    assert.ok(hostSlot);
+    assert.ok(guestSlot);
+    assert.notEqual(hostSlot.x, guestSlot.x);
 
     roomStore.updateMatchState(roomCode, (match) => ({
       ...match,
@@ -110,8 +158,37 @@ export async function runShootEventsIntegrationSuite(): Promise<void> {
 
     const updatedState = await onceWithTimeout<{ leaderboard: Array<{ score: number }> }>(host, "game_state", 3000);
     assert.equal(updatedState.leaderboard[0]?.score, 10);
+
+    await new Promise<void>((resolve) => setTimeout(resolve, 450));
+    host.emit("shoot", { roomCode, targetX: 240, targetY: 180, clientTs: Date.now() });
+    const hostProjectileState = await waitForEventWhere<{
+      projectiles: Array<{ ownerId: string; x: number; y: number }>;
+    }>(
+      host,
+      "game_state",
+      (state) => state.projectiles.some((projectile) => projectile.ownerId === host.id),
+      3000
+    );
+    const hostProjectile = hostProjectileState.projectiles.find((projectile) => projectile.ownerId === host.id);
+    assert.ok(hostProjectile);
+
+    await new Promise<void>((resolve) => setTimeout(resolve, 450));
+    guest.emit("shoot", { roomCode, targetX: 240, targetY: 180, clientTs: Date.now() });
+    const guestProjectileState = await waitForEventWhere<{
+      playerSlots: Array<{ playerId: string; x: number; y: number }>;
+      projectiles: Array<{ ownerId: string; x: number; y: number }>;
+    }>(
+      guest,
+      "game_state",
+      (state) => state.projectiles.some((projectile) => projectile.ownerId === guest.id),
+      3000
+    );
+    assert.equal(guestProjectileState.playerSlots.length, 2);
+    const guestProjectile = guestProjectileState.projectiles.find((projectile) => projectile.ownerId === guest.id);
+    assert.ok(guestProjectile);
   } finally {
     host.disconnect();
+    guest.disconnect();
     await new Promise<void>((resolve) => io.close(() => resolve()));
     await new Promise<void>((resolve) => httpServer.close(() => resolve()));
   }

@@ -1,5 +1,6 @@
 import { Navigate, useNavigate, useParams } from "react-router";
 import { MatchView } from "../game/MatchView.js";
+import { getCharacterById } from "../game/characters.js";
 import { getSocket } from "../net/socket.js";
 import { normalizeRoomCode, useSessionStore } from "../app/useSessionStore.js";
 
@@ -56,12 +57,18 @@ export function RoomPage() {
           <p>Waiting for lobby sync.</p>
         ) : (
           <ul className="plain-list">
-            {lobbyState.players.map((player) => (
-              <li key={player.id}>
-                <span>{player.playerName}</span>
-                <span>{player.score} pts</span>
-              </li>
-            ))}
+            {lobbyState.players.map((player) => {
+              const character = getCharacterById(player.characterId);
+              return (
+                <li key={player.id}>
+                  <span className="player-pill">
+                    {character ? <img src={character.imageSrc} alt={character.label} /> : <span className="player-avatar-fallback" />}
+                    <span>{player.playerName}</span>
+                  </span>
+                  <span>{player.score} pts</span>
+                </li>
+              );
+            })}
           </ul>
         )}
       </section>
@@ -74,6 +81,7 @@ export function RoomPage() {
           countdownSeconds={matchState.countdownSeconds}
           gameOver={matchState.gameOver}
           lastHit={matchState.lastHit}
+          players={lobbyState?.players ?? []}
         />
       ) : (
         <section className="card waiting-shell">

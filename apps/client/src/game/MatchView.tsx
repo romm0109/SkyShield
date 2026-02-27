@@ -1,5 +1,9 @@
 import { useMemo, useRef } from "react";
+import type { PlayerState } from "@skyshield/shared-types";
 import { getSocket } from "../net/socket.js";
+import cityImage from "../assets/city.png";
+import { getCharacterById } from "./characters.js";
+import { toPercentX as toVisualPercentX, toPercentY as toVisualPercentY, toPlayerSlotStyle, toProjectileOwnerClass } from "./playerVisuals.js";
 import type { GameOverSnapshot, HitConfirmedSnapshot, MatchSnapshot, MatchPhase } from "./types.js";
 
 interface MatchViewProps {
@@ -9,6 +13,7 @@ interface MatchViewProps {
   countdownSeconds: number | null;
   gameOver: GameOverSnapshot | null;
   lastHit: HitConfirmedSnapshot | null;
+  players?: Array<Pick<PlayerState, "id" | "playerName" | "characterId">>;
   onShoot?: (payload: ShotPayload) => void;
   shootCooldownMs?: number;
 }
@@ -24,11 +29,11 @@ const PLAYFIELD_WIDTH = 480;
 const PLAYFIELD_HEIGHT = 720;
 
 export function toPercentX(x: number): string {
-  return `${(x / PLAYFIELD_WIDTH) * 100}%`;
+  return toVisualPercentX(x);
 }
 
 export function toPercentY(y: number): string {
-  return `${(y / PLAYFIELD_HEIGHT) * 100}%`;
+  return toVisualPercentY(y);
 }
 
 export function clampPlayfieldTarget(targetX: number, targetY: number): { targetX: number; targetY: number } {
@@ -45,11 +50,13 @@ export function MatchView({
   countdownSeconds,
   gameOver,
   lastHit,
+  players = [],
   onShoot,
   shootCooldownMs = SHOT_COOLDOWN_MS
 }: MatchViewProps) {
   const lastShotMsRef = useRef(0);
   const topLeaderboard = useMemo(() => match.leaderboard.slice(0, 4), [match.leaderboard]);
+  const playersById = useMemo(() => new Map(players.map((player) => [player.id, player])), [players]);
 
   const fireShot = (targetX: number, targetY: number): void => {
     const nowMs = Date.now();
@@ -107,6 +114,7 @@ export function MatchView({
           fireShot(event.clientX - rect.left, event.clientY - rect.top);
         }}
       >
+        <img className="city-layer" src={cityImage} alt="" aria-hidden />
         {phase === "countdown" && <div className="overlay-pill">Match starts in {countdownSeconds ?? 3}</div>}
         {phase === "game_over" && gameOver && (
           <div className="overlay-pill">
@@ -114,17 +122,35 @@ export function MatchView({
           </div>
         )}
         {lastHit && <div className="hit-toast">Hit +{lastHit.points}</div>}
+
         {match.meteors.map((meteor) => (
           <div
             key={meteor.id}
             className={`meteor meteor-${meteor.type}`}
             style={{ left: toPercentX(meteor.x), top: toPercentY(meteor.y), width: meteor.radius * 2, height: meteor.radius * 2 }}
-          />
+          >
+            <div className="meteor-core" />
+          </div>
         ))}
+
+        {match.playerSlots.map((slot) => {
+          const player = playersById.get(slot.playerId);
+          const character = getCharacterById(player?.characterId ?? "");
+          const style = toPlayerSlotStyle(slot);
+
+          return (
+            <div key={slot.playerId} className="player-actor" style={style}>
+              <div className="cannon" />
+              {character && <img className="player-avatar" src={character.imageSrc} alt={character.label} />}
+              <span className="player-tag">{player?.playerName ?? "Player"}</span>
+            </div>
+          );
+        })}
+
         {match.projectiles.map((projectile) => (
           <div
             key={projectile.id}
-            className="projectile"
+            className={`projectile ${toProjectileOwnerClass(projectile.ownerId)}`}
             style={{
               left: toPercentX(projectile.x),
               top: toPercentY(projectile.y),

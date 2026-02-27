@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import { normalizeRoomCode, useSessionStore } from "../app/useSessionStore.js";
+import { CHARACTER_OPTIONS, getCharacterById } from "../game/characters.js";
 
 export function LobbyPage() {
   const navigate = useNavigate();
@@ -44,14 +45,26 @@ export function LobbyPage() {
             onChange={(event) => setPlayerName(event.target.value)}
           />
         </label>
-        <label>
-          Character id
-          <input
-            placeholder="scout"
-            value={characterId}
-            onChange={(event) => setCharacterId(event.target.value)}
-          />
-        </label>
+        <fieldset className="character-picker">
+          <legend>Character</legend>
+          <div className="character-grid">
+            {CHARACTER_OPTIONS.map((character) => {
+              const isSelected = character.id === characterId;
+              return (
+                <button
+                  key={character.id}
+                  type="button"
+                  className={`character-card${isSelected ? " is-selected" : ""}`}
+                  aria-pressed={isSelected}
+                  onClick={() => setCharacterId(character.id)}
+                >
+                  <img src={character.imageSrc} alt={character.label} loading="lazy" />
+                  <span>{character.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </fieldset>
         <label>
           Room code
           <input
@@ -91,11 +104,18 @@ export function LobbyPage() {
               Room <strong>{lobbyState.roomCode}</strong>
             </p>
             <ul className="plain-list">
-              {lobbyState.players.map((player) => (
-                <li key={player.id}>
-                  {player.playerName} · {player.characterId} · {player.score} pts
-                </li>
-              ))}
+              {lobbyState.players.map((player) => {
+                const character = getCharacterById(player.characterId);
+                return (
+                  <li key={player.id}>
+                    <span className="player-pill">
+                      {character ? <img src={character.imageSrc} alt={character.label} /> : <span className="player-avatar-fallback" />}
+                      <span>{player.playerName}</span>
+                    </span>
+                    <span>{player.score} pts</span>
+                  </li>
+                );
+              })}
             </ul>
           </>
         )}

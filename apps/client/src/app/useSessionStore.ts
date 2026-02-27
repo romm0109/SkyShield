@@ -1,6 +1,7 @@
 import { createContext, createElement, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { LobbyState } from "@skyshield/shared-types";
 import { useMatchState, type UseMatchStateValue } from "../game/useMatchState.js";
+import { DEFAULT_CHARACTER_ID, isValidCharacterId } from "../game/characters.js";
 import { connectSocket, getSocket } from "../net/socket.js";
 
 const PLAYER_NAME_KEY = "skyshield.playerName";
@@ -16,16 +17,17 @@ interface ProfileSnapshot {
 }
 
 function readInitialProfile(): ProfileSnapshot {
+  const storedCharacterId = localStorage.getItem(CHARACTER_ID_KEY) ?? DEFAULT_CHARACTER_ID;
+  const normalizedCharacterId = isValidCharacterId(storedCharacterId) ? storedCharacterId.trim() : DEFAULT_CHARACTER_ID;
   return {
     playerName: localStorage.getItem(PLAYER_NAME_KEY) ?? "",
-    characterId: localStorage.getItem(CHARACTER_ID_KEY) ?? "scout"
+    characterId: normalizedCharacterId
   };
 }
 
 function isValidProfile(profile: ProfileSnapshot): boolean {
   const trimmedName = profile.playerName.trim();
-  const trimmedCharacterId = profile.characterId.trim();
-  return trimmedName.length >= 2 && trimmedName.length <= 16 && trimmedCharacterId.length > 0;
+  return trimmedName.length >= 2 && trimmedName.length <= 16 && isValidCharacterId(profile.characterId);
 }
 
 export interface SessionStoreValue {
@@ -101,13 +103,17 @@ export function SessionStoreProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const persistProfile = (): boolean => {
-    const profile = { playerName, characterId };
+    const normalizedCharacterId = isValidCharacterId(characterId) ? characterId.trim() : DEFAULT_CHARACTER_ID;
+    const profile = { playerName, characterId: normalizedCharacterId };
     if (!isValidProfile(profile)) {
       setStatus("Provide valid player and character values");
       return false;
     }
+    if (normalizedCharacterId !== characterId) {
+      setCharacterId(normalizedCharacterId);
+    }
     localStorage.setItem(PLAYER_NAME_KEY, profile.playerName.trim());
-    localStorage.setItem(CHARACTER_ID_KEY, profile.characterId.trim());
+    localStorage.setItem(CHARACTER_ID_KEY, profile.characterId);
     return true;
   };
 
@@ -119,7 +125,7 @@ export function SessionStoreProvider({ children }: { children: ReactNode }) {
     connectSocket();
     getSocket().emit("create_room", {
       playerName: playerName.trim(),
-      characterId: characterId.trim()
+      characterId: isValidCharacterId(characterId) ? characterId.trim() : DEFAULT_CHARACTER_ID
     });
   };
 
@@ -137,7 +143,7 @@ export function SessionStoreProvider({ children }: { children: ReactNode }) {
     getSocket().emit("join_room", {
       roomCode: normalizedCode,
       playerName: playerName.trim(),
-      characterId: characterId.trim()
+      characterId: isValidCharacterId(characterId) ? characterId.trim() : DEFAULT_CHARACTER_ID
     });
   };
 

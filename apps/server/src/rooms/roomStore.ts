@@ -6,6 +6,7 @@ import type {
   RoomPhase,
   RoomState
 } from "@skyshield/shared-types";
+import { buildPlayerSlots } from "../game-loop/playerSlots.js";
 
 function generateRoomCode(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -29,20 +30,28 @@ export interface JoinRoomInput extends CreateRoomInput {
 export interface RoomRuntimeDefaults {
   matchDurationSeconds: number;
   cityHp: number;
+  playfieldWidth?: number;
+  groundY?: number;
 }
 
 const DEFAULT_RUNTIME: RoomRuntimeDefaults = {
   matchDurationSeconds: 600,
-  cityHp: 20
+  cityHp: 20,
+  playfieldWidth: 480,
+  groundY: 720
 };
 
-function createInitialMatchState(runtime: RoomRuntimeDefaults): MatchRuntimeState {
+function createInitialMatchState(runtime: RoomRuntimeDefaults, players: Iterable<PlayerState>): MatchRuntimeState {
   return {
     countdownSeconds: null,
     remainingSeconds: runtime.matchDurationSeconds,
     cityHp: runtime.cityHp,
     meteors: [],
     projectiles: [],
+    playerSlots: buildPlayerSlots(players, {
+      playfieldWidth: runtime.playfieldWidth ?? DEFAULT_RUNTIME.playfieldWidth!,
+      groundY: runtime.groundY ?? DEFAULT_RUNTIME.groundY!
+    }),
     leaderboard: [],
     playerStats: {},
     nextMeteorId: 1,
@@ -78,7 +87,7 @@ export class RoomStore {
       roomCode,
       hostSocketId: input.socketId,
       phase: "lobby",
-      match: createInitialMatchState(this.runtimeDefaults),
+      match: createInitialMatchState(this.runtimeDefaults, [player]),
       players: new Map([[input.socketId, player]])
     };
 
@@ -106,6 +115,7 @@ export class RoomStore {
       characterId: input.characterId,
       score: 0
     });
+    this.rebuildPlayerSlots(room);
 
     return { room };
   }
@@ -131,6 +141,7 @@ export class RoomStore {
         room.hostSocketId = nextHost;
       }
 
+      this.rebuildPlayerSlots(room);
       return room;
     }
 
@@ -205,5 +216,13 @@ export class RoomStore {
   public isHost(roomCode: string, socketId: string): boolean {
     const room = this.rooms.get(roomCode);
     return room?.hostSocketId === socketId;
+  }
+
+  public rebuildPlayerSlots(room: RoomState): RoomState {
+    room.match.playerSlots = buildPlayerSlots(room.players.values(), {
+      playfieldWidth: this.runtimeDefaults.playfieldWidth ?? DEFAULT_RUNTIME.playfieldWidth!,
+      groundY: this.runtimeDefaults.groundY ?? DEFAULT_RUNTIME.groundY!
+    });
+    return room;
   }
 }

@@ -156,6 +156,7 @@ export class MatchLifecycleManager {
       loop.countdownTimeout = undefined;
     }
 
+    this.roomStore.rebuildPlayerSlots(room);
     this.roomStore.setRoomPhase(roomCode, "in_game");
     this.roomStore.updateMatchState(roomCode, (match) => ({
       ...match,
@@ -164,6 +165,7 @@ export class MatchLifecycleManager {
       cityHp: this.env.CITY_HP_DEFAULT,
       meteors: [],
       projectiles: [],
+      playerSlots: room.match.playerSlots,
       nextMeteorId: 1,
       nextProjectileId: 1,
       lastMeteorSpawnMs: this.now(),
@@ -254,6 +256,7 @@ export class MatchLifecycleManager {
       cityHp: match.cityHp,
       meteors: match.meteors,
       projectiles: match.projectiles,
+      playerSlots: match.playerSlots,
       leaderboard: match.leaderboard
     });
   }

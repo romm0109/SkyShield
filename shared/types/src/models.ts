@@ -41,6 +41,13 @@ export interface ProjectileState {
   createdAtMs: number;
 }
 
+export interface PlayerSlotState {
+  playerId: string;
+  x: number;
+  y: number;
+  lane?: number;
+}
+
 export interface PlayerMatchStats {
   shotsFired: number;
   hits: number;
@@ -63,6 +70,7 @@ export interface MatchRuntimeState {
   cityHp: number;
   meteors: MeteorState[];
   projectiles: ProjectileState[];
+  playerSlots: PlayerSlotState[];
   leaderboard: LeaderboardEntry[];
   playerStats: Record<string, PlayerMatchStats>;
   nextMeteorId: number;

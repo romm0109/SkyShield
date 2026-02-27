@@ -34,6 +34,7 @@ function createRoom(): RoomState {
       cityHp: 5,
       meteors: [],
       projectiles: [],
+      playerSlots: [],
       leaderboard: [],
       playerStats: {
         p1: { shotsFired: 0, hits: 0, accuracy: 0 },

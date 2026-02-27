@@ -19,6 +19,7 @@ function toMatchSnapshot(match: MatchRuntimeState): MatchSnapshot {
     cityHp: match.cityHp,
     meteors: match.meteors,
     projectiles: match.projectiles,
+    playerSlots: match.playerSlots,
     leaderboard: match.leaderboard
   };
 }
@@ -29,6 +30,7 @@ function createInitialMatchSnapshot(): MatchSnapshot {
     cityHp: OFFLINE_CITY_HP,
     meteors: [],
     projectiles: [],
+    playerSlots: [],
     leaderboard: []
   };
 }
@@ -37,7 +39,7 @@ function createOfflinePlayer(playerName: string, characterId: string): PlayerSta
   return {
     id: OFFLINE_PLAYER_ID,
     playerName: playerName.trim() || "Pilot",
-    characterId: characterId.trim() || "scout",
+    characterId: characterId.trim() || "bibi",
     score: 0
   };
 }
@@ -54,6 +56,14 @@ function createOfflineRoomState(player: PlayerState, nowMs: number): RoomState {
       cityHp: OFFLINE_CITY_HP,
       meteors: [],
       projectiles: [],
+      playerSlots: [
+        {
+          playerId: player.id,
+          x: OFFLINE_SIMULATION_CONFIG.playfieldWidth / 2,
+          y: OFFLINE_SIMULATION_CONFIG.groundY - 24,
+          lane: 0
+        }
+      ],
       leaderboard: [],
       playerStats: {
         [player.id]: { shotsFired: 0, hits: 0, accuracy: 0 }
@@ -76,10 +86,7 @@ export function shouldThrottleOfflineShot(lastShotMs: number, nextShotMs: number
   return nextShotMs - lastShotMs < OFFLINE_SHOT_COOLDOWN_MS;
 }
 
-export function resolveOfflineMatchResult(
-  cityHp: number,
-  remainingSeconds: number
-): GameOverSnapshot | null {
+export function resolveOfflineMatchResult(cityHp: number, remainingSeconds: number): GameOverSnapshot | null {
   if (cityHp <= 0) {
     return {
       result: "lose",
@@ -290,27 +297,24 @@ export function useOfflineMatchState(playerName: string, characterId: string): U
     startMatch();
   }, [startMatch]);
 
-  const fireShot = useCallback(
-    (targetX: number, targetY: number, clientTs: number) => {
-      if (roomRef.current?.phase !== "in_game") {
-        return;
-      }
+  const fireShot = useCallback((targetX: number, targetY: number, clientTs: number) => {
+    if (roomRef.current?.phase !== "in_game") {
+      return;
+    }
 
-      if (shouldThrottleOfflineShot(lastShotMsRef.current, clientTs)) {
-        return;
-      }
-      lastShotMsRef.current = clientTs;
+    if (shouldThrottleOfflineShot(lastShotMsRef.current, clientTs)) {
+      return;
+    }
+    lastShotMsRef.current = clientTs;
 
-      const clamped = clampOfflineShotTarget(targetX, targetY);
-      shotQueueRef.current.push({
-        playerId: OFFLINE_PLAYER_ID,
-        targetX: clamped.targetX,
-        targetY: clamped.targetY,
-        clientTs
-      });
-    },
-    []
-  );
+    const clamped = clampOfflineShotTarget(targetX, targetY);
+    shotQueueRef.current.push({
+      playerId: OFFLINE_PLAYER_ID,
+      targetX: clamped.targetX,
+      targetY: clamped.targetY,
+      clientTs
+    });
+  }, []);
 
   useEffect(() => () => resetLoopState(), [resetLoopState]);
 

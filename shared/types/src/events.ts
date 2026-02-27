@@ -1,4 +1,4 @@
-import type { LeaderboardEntry, LobbyState, MeteorState, ProjectileState } from "./models.js";
+import type { LeaderboardEntry, LobbyState, MeteorState, PlayerSlotState, ProjectileState } from "./models.js";
 
 export interface CreateRoomPayload {
   playerName: string;
@@ -46,6 +46,7 @@ export interface ServerToClientEvents {
     cityHp: number;
     meteors: MeteorState[];
     projectiles: ProjectileState[];
+    playerSlots: PlayerSlotState[];
     leaderboard: LeaderboardEntry[];
   }) => void;
   hit_confirmed: (payload: {

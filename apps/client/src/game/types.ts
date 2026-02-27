@@ -1,4 +1,4 @@
-import type { LeaderboardEntry, MeteorState, ProjectileState } from "@skyshield/shared-types";
+import type { LeaderboardEntry, MeteorState, PlayerSlotState, ProjectileState } from "@skyshield/shared-types";
 
 export type MatchPhase = "lobby" | "countdown" | "in_game" | "game_over";
 
@@ -7,6 +7,7 @@ export interface MatchSnapshot {
   cityHp: number;
   meteors: MeteorState[];
   projectiles: ProjectileState[];
+  playerSlots: PlayerSlotState[];
   leaderboard: LeaderboardEntry[];
 }
 

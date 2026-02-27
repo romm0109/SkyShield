@@ -152,6 +152,16 @@ input {
     linear-gradient(180deg, #112a40 0%, #0a1a2a 100%);
 }
 
+.city-layer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  opacity: 0.72;
+  pointer-events: none;
+  z-index: 2;
+}
+
 .overlay-pill {
   position: absolute;
   top: 12px;
@@ -186,16 +196,86 @@ input {
 .meteor-light {
   background: radial-gradient(circle at 24% 20%, #ffe8a9, #e9803b 65%, #6c2a11 100%);
   box-shadow: 0 0 16px rgba(255, 141, 55, 0.52);
+  z-index: 6;
 }
 
 .meteor-heavy {
   background: radial-gradient(circle at 28% 22%, #f1f5fb, #8895a6 60%, #313945 100%);
   box-shadow: 0 0 16px rgba(184, 207, 236, 0.45);
+  z-index: 6;
+}
+
+.meteor-core {
+  width: 45%;
+  height: 45%;
+  border-radius: 999px;
+  margin: 28%;
+  background: rgba(255, 245, 219, 0.7);
+  box-shadow: 0 0 8px rgba(255, 236, 192, 0.75);
 }
 
 .projectile {
   background: radial-gradient(circle at 34% 35%, #abecff, #5cc7ff);
   box-shadow: 0 0 12px rgba(98, 212, 255, 0.75);
+  z-index: 8;
+}
+
+.projectile-owner-0 {
+  box-shadow: 0 0 12px rgba(98, 212, 255, 0.75);
+}
+
+.projectile-owner-1 {
+  box-shadow: 0 0 12px rgba(245, 200, 91, 0.75);
+  background: radial-gradient(circle at 34% 35%, #fff2be, #ffc44d);
+}
+
+.projectile-owner-2 {
+  box-shadow: 0 0 12px rgba(98, 224, 167, 0.75);
+  background: radial-gradient(circle at 34% 35%, #c5ffd6, #53db92);
+}
+
+.projectile-owner-3 {
+  box-shadow: 0 0 12px rgba(249, 166, 166, 0.75);
+  background: radial-gradient(circle at 34% 35%, #ffd7d7, #ff8d8d);
+}
+
+.player-actor {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  pointer-events: none;
+  z-index: 7;
+}
+
+.player-avatar {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 14px;
+  border: 1px solid rgba(200, 229, 255, 0.5);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+}
+
+.player-tag {
+  font-size: 11px;
+  color: #ebf4ff;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.65);
+}
+
+.cannon {
+  width: 12px;
+  height: 26px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #d8e9fb, #6f8ba8);
+  transform: translateY(10px);
+  box-shadow: 0 2px 8px rgba(25, 42, 62, 0.8);
+}
+
+.overlay-pill,
+.hit-toast {
+  z-index: 20;
 }
 
 .leaderboard {

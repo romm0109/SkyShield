@@ -64,14 +64,16 @@ shared/
 - Room create/join flow over Socket.io
 - Lobby state sync for connected players
 - Local profile persistence (`skyshield.playerName`, `skyshield.characterId`)
+- Image-based character selection from local player assets
 - Offline singleplayer route with local browser simulation (`/offline`)
 - In-memory server room store (no DB)
 - Authoritative server gameplay loop:
   - Meteor spawn/movement simulation
-  - Player shooting with server-side validation/throttling
+  - Player shooting with server-side validation/throttling (400ms per socket)
+  - Per-player cannon slot assignment and shooter-specific projectile origin
   - Collision scoring + live leaderboard
   - City HP damage + `city_destroyed` game-over path
-- Client in-match renderer (HUD + live playfield + click/tap shooting)
+- Client in-match renderer (HUD + city backdrop + all players/cannons/projectiles + click/tap shooting)
 
 ## Known Limitations
 
@@ -83,7 +85,7 @@ shared/
 ## Gameplay Controls
 
 - Lobby page (`/`):
-  - Set profile (`playerName`, `characterId`), then create or join a room.
+  - Set profile (`playerName`) and pick a character image, then create or join a room.
   - Use `Singleplayer (Offline)` to start a local match with no room code.
   - Successful create/join navigates to `/room/:roomCode`.
 - Offline page (`/offline`):
@@ -91,9 +93,10 @@ shared/
   - Click/tap inside the playfield to shoot.
   - `Retry Match` starts a fresh 10-minute session.
 - Room page (`/room/:roomCode`):
-  - Shows room roster and host controls.
+  - Shows room roster with character thumbnails and host controls.
   - Host clicks `Start Game`.
   - During match, click/tap inside the playfield to fire at target coordinates.
+  - All connected clients see every player actor/cannon, all active meteors, and all projectiles.
 - Reload throttle is server-enforced at `400ms` between shots per socket.
 
 ## Simulation Environment Variables

@@ -10,7 +10,9 @@ import type { ClientToServerEvents, InterServerEvents, ServerToClientEvents, Soc
 const env = loadEnv();
 const roomStore = new RoomStore(env.MAX_PLAYERS_PER_ROOM, {
   matchDurationSeconds: env.MATCH_DURATION_SECONDS,
-  cityHp: env.CITY_HP_DEFAULT
+  cityHp: env.CITY_HP_DEFAULT,
+  playfieldWidth: env.PLAYFIELD_WIDTH,
+  groundY: env.METEOR_GROUND_Y
 });
 
 const httpServer = createServer((req, res) => {

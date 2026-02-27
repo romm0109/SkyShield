@@ -256,3 +256,88 @@
 - Notes:
   - Client `test/build/dev` commands may require unsandboxed execution due to Vite/esbuild `spawn EPERM` in sandbox.
   - Workspace `npm.cmd run build` may require unsandboxed execution due to Nx plugin worker startup restrictions in sandbox.
+
+## Latest Offline Singleplayer + Shared Simulation Slice
+
+### Shared Simulation Source of Truth
+
+- Added shared gameplay engine:
+  - `shared/types/src/simulation.ts`
+  - exported via `shared/types/src/index.ts`
+- Includes:
+  - `stepSimulation`
+  - `buildLeaderboard`
+  - shared simulation types (`SimulationConfig`, `QueuedShot`, etc.)
+- Server simulation module now re-exports from shared package:
+  - `apps/server/src/game-loop/simulation.ts`
+- Server simulation spec now targets shared module surface:
+  - `apps/server/src/game-loop/simulation.spec.ts`
+
+### Offline Mode (`apps/client`)
+
+- Added offline config with server-default parity constants:
+  - `apps/client/src/offline/offlineConfig.ts`
+- Added offline lifecycle hook:
+  - `apps/client/src/offline/useOfflineMatchState.ts`
+  - countdown -> in_game -> game_over phases
+  - RAF-driven simulation loop with clamped `dt` (`1..250ms`)
+  - local shot queue + 400ms throttle gate
+  - win/lose semantics aligned to multiplayer (`timer_complete`, `city_destroyed`)
+- Added offline page:
+  - `apps/client/src/pages/OfflinePage.tsx`
+  - start/retry/back controls + profile summary + `MatchView` reuse
+- Added route and lobby entry:
+  - `apps/client/src/app/router.tsx` (`/offline`)
+  - `apps/client/src/pages/LobbyPage.tsx` (`Singleplayer (Offline)` CTA)
+- Session isolation updates:
+  - `apps/client/src/app/useSessionStore.ts`
+  - added `enterOfflineMode`
+  - clears online room state for offline entry
+  - ignores lobby/room socket updates while offline to prevent state bleed
+  - moved `connectSocket()` to online actions (`createRoom`, `joinRoom`, `startGame`) so offline path does not auto-connect
+
+### MatchView Refactor
+
+- Updated `apps/client/src/game/MatchView.tsx`:
+  - optional `onShoot` callback
+  - optional `shootCooldownMs`
+  - extracted shot clamp helper for deterministic testing
+  - preserves existing socket behavior when `onShoot` is not provided
+
+### Tests Added/Updated
+
+- Added:
+  - `shared/types/src/simulation.spec.ts`
+  - `apps/client/src/offline/useOfflineMatchState.spec.ts`
+- Updated:
+  - `shared/types/src/run-tests.ts` to include shared simulation spec
+  - `apps/client/src/game/MatchView.spec.ts` with shot-clamp helper assertions
+
+### Docs
+
+- Updated `README.md` with:
+  - offline route/flow documentation
+  - offline limitations and control summary
+
+### Latest Validation Status (Offline Slice)
+
+- Passed:
+  - `npm.cmd run lint --workspace shared/types`
+  - `npm.cmd run lint --workspace apps/server`
+  - `npm.cmd run lint --workspace apps/client`
+  - `npm.cmd run test --workspace shared/types`
+  - `npm.cmd run test --workspace apps/server`
+  - `npm.cmd run test --workspace apps/client`
+  - `npm.cmd run test:integration --workspace apps/server`
+  - `npm.cmd run typecheck --workspace shared/types`
+  - `npm.cmd run typecheck --workspace apps/server`
+  - `npm.cmd run typecheck --workspace apps/client`
+  - `npm.cmd run build --workspace shared/types`
+  - `npm.cmd run build --workspace apps/server`
+  - `npm.cmd run build --workspace apps/client`
+  - `npm.cmd run test`
+- Blocked (environment-level, unrelated to feature code):
+  - `npm.cmd run build` (root Nx run-many)
+  - `npm.cmd run dev` (root Nx run-many)
+  - failure cause: duplicate project names from `.worktrees/fixing-game-looks/*` and main workspace
+  - Nx error: `MultipleProjectsWithSameNameError` for `client`, `server`, `shared-types`

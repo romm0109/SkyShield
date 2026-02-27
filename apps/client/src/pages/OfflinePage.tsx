@@ -3,11 +3,13 @@ import { useNavigate } from "react-router";
 import { MatchView, SHOT_COOLDOWN_MS } from "../game/MatchView.js";
 import { useSessionStore } from "../app/useSessionStore.js";
 import { useOfflineMatchState } from "../offline/useOfflineMatchState.js";
+import { getCharacterById } from "../game/characters.js";
 
 export function OfflinePage() {
   const navigate = useNavigate();
   const { playerName, characterId, enterOfflineMode } = useSessionStore();
   const offlineMatch = useOfflineMatchState(playerName, characterId);
+  const selectedCharacter = getCharacterById(characterId);
   const shouldRenderMatch =
     offlineMatch.phase === "countdown" || offlineMatch.phase === "in_game" || offlineMatch.phase === "game_over";
 
@@ -47,7 +49,7 @@ export function OfflinePage() {
       <section className="card offline-profile">
         <h2>Pilot Profile</h2>
         <p>
-          <strong>{playerName.trim() || "Pilot"}</strong> · {characterId.trim() || "scout"}
+          <strong>{playerName.trim() || "Pilot"}</strong> | {selectedCharacter?.label ?? "Bibi"}
         </p>
         <p>Runs locally in your browser with no gameplay socket events.</p>
       </section>
@@ -60,6 +62,7 @@ export function OfflinePage() {
           countdownSeconds={offlineMatch.countdownSeconds}
           gameOver={offlineMatch.gameOver}
           lastHit={offlineMatch.lastHit}
+          players={[{ id: "offline-player", playerName: playerName.trim() || "Pilot", characterId: selectedCharacter?.id ?? "bibi" }]}
           onShoot={(payload) => {
             offlineMatch.fireShot(payload.targetX, payload.targetY, payload.clientTs);
           }}
