@@ -64,6 +64,7 @@ shared/
 - Room create/join flow over Socket.io
 - Lobby state sync for connected players
 - Local profile persistence (`skyshield.playerName`, `skyshield.characterId`)
+- Offline singleplayer route with local browser simulation (`/offline`)
 - In-memory server room store (no DB)
 - Authoritative server gameplay loop:
   - Meteor spawn/movement simulation
@@ -77,12 +78,18 @@ shared/
 - Rendering is lightweight DOM-based (Phaser integration is still pending)
 - No persistence beyond in-memory room state
 - Host handoff is basic (next connected player)
+- Offline mode is singleplayer-only and uses fixed local defaults (no custom difficulty UI)
 
 ## Gameplay Controls
 
 - Lobby page (`/`):
   - Set profile (`playerName`, `characterId`), then create or join a room.
+  - Use `Singleplayer (Offline)` to start a local match with no room code.
   - Successful create/join navigates to `/room/:roomCode`.
+- Offline page (`/offline`):
+  - Runs a full local match in-browser (countdown, shooting, score, city HP, game over).
+  - Click/tap inside the playfield to shoot.
+  - `Retry Match` starts a fresh 10-minute session.
 - Room page (`/room/:roomCode`):
   - Shows room roster and host controls.
   - Host clicks `Start Game`.

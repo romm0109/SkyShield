@@ -1,4 +1,4 @@
-import { createContext, createElement, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, createElement, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { LobbyState } from "@skyshield/shared-types";
 import { useMatchState, type UseMatchStateValue } from "../game/useMatchState.js";
 import { connectSocket, getSocket } from "../net/socket.js";
@@ -43,6 +43,7 @@ export interface SessionStoreValue {
   joinRoom: () => void;
   startGame: () => void;
   clearSessionRoom: () => void;
+  enterOfflineMode: () => void;
 }
 
 const SessionStoreContext = createContext<SessionStoreValue | null>(null);
@@ -56,10 +57,10 @@ export function SessionStoreProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState("Disconnected");
   const [lobbyState, setLobbyState] = useState<LobbyState | null>(null);
   const matchState = useMatchState(lobbyState, activeRoomCode);
+  const offlineModeRef = useRef(false);
 
   useEffect(() => {
     const socket = getSocket();
-    connectSocket();
 
     const onConnect = () => setStatus(`Connected (${socket.id ?? "n/a"})`);
     const onDisconnect = () => {
@@ -68,10 +69,16 @@ export function SessionStoreProvider({ children }: { children: ReactNode }) {
       setActiveRoomCode("");
     };
     const onRoomCreated = (payload: { roomCode: string }) => {
+      if (offlineModeRef.current) {
+        return;
+      }
       setActiveRoomCode(payload.roomCode);
       setRoomCodeInput(payload.roomCode);
     };
     const onLobbyState = (payload: LobbyState) => {
+      if (offlineModeRef.current) {
+        return;
+      }
       setLobbyState(payload);
       setActiveRoomCode(payload.roomCode);
       setRoomCodeInput(payload.roomCode);
@@ -108,6 +115,8 @@ export function SessionStoreProvider({ children }: { children: ReactNode }) {
     if (!persistProfile()) {
       return;
     }
+    offlineModeRef.current = false;
+    connectSocket();
     getSocket().emit("create_room", {
       playerName: playerName.trim(),
       characterId: characterId.trim()
@@ -118,11 +127,13 @@ export function SessionStoreProvider({ children }: { children: ReactNode }) {
     if (!persistProfile()) {
       return;
     }
+    offlineModeRef.current = false;
     const normalizedCode = normalizeRoomCode(roomCodeInput);
     if (!normalizedCode) {
       setStatus("Missing room code");
       return;
     }
+    connectSocket();
     getSocket().emit("join_room", {
       roomCode: normalizedCode,
       playerName: playerName.trim(),
@@ -131,17 +142,28 @@ export function SessionStoreProvider({ children }: { children: ReactNode }) {
   };
 
   const startGame = (): void => {
+    offlineModeRef.current = false;
     const roomCode = matchState.roomCode || normalizeRoomCode(roomCodeInput);
     if (!roomCode) {
       setStatus("Missing room code");
       return;
     }
+    connectSocket();
     getSocket().emit("start_game", { roomCode });
   };
 
   const clearSessionRoom = (): void => {
+    offlineModeRef.current = false;
     setActiveRoomCode("");
     setLobbyState(null);
+  };
+
+  const enterOfflineMode = (): void => {
+    offlineModeRef.current = true;
+    setActiveRoomCode("");
+    setLobbyState(null);
+    setRoomCodeInput("");
+    setStatus("Offline mode active");
   };
 
   const value: SessionStoreValue = {
@@ -158,7 +180,8 @@ export function SessionStoreProvider({ children }: { children: ReactNode }) {
     createRoom,
     joinRoom,
     startGame,
-    clearSessionRoom
+    clearSessionRoom,
+    enterOfflineMode
   };
 
   return createElement(SessionStoreContext.Provider, { value }, children);

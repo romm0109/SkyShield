@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { buildLeaderboard, stepSimulation, type RoomState, type SimulationConfig } from "@skyshield/shared-types";
+import type { RoomState } from "./models.js";
+import { buildLeaderboard, stepSimulation, type SimulationConfig } from "./simulation.js";
 
 const config: SimulationConfig = {
   playfieldWidth: 480,

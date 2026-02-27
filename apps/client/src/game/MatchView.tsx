@@ -9,9 +9,17 @@ interface MatchViewProps {
   countdownSeconds: number | null;
   gameOver: GameOverSnapshot | null;
   lastHit: HitConfirmedSnapshot | null;
+  onShoot?: (payload: ShotPayload) => void;
+  shootCooldownMs?: number;
 }
 
-const SHOT_COOLDOWN_MS = 400;
+export interface ShotPayload {
+  targetX: number;
+  targetY: number;
+  clientTs: number;
+}
+
+export const SHOT_COOLDOWN_MS = 400;
 const PLAYFIELD_WIDTH = 480;
 const PLAYFIELD_HEIGHT = 720;
 
@@ -23,20 +31,52 @@ export function toPercentY(y: number): string {
   return `${(y / PLAYFIELD_HEIGHT) * 100}%`;
 }
 
-export function MatchView({ phase, roomCode, match, countdownSeconds, gameOver, lastHit }: MatchViewProps) {
+export function clampPlayfieldTarget(targetX: number, targetY: number): { targetX: number; targetY: number } {
+  return {
+    targetX: Math.max(0, Math.min(PLAYFIELD_WIDTH, targetX)),
+    targetY: Math.max(0, Math.min(PLAYFIELD_HEIGHT, targetY))
+  };
+}
+
+export function MatchView({
+  phase,
+  roomCode,
+  match,
+  countdownSeconds,
+  gameOver,
+  lastHit,
+  onShoot,
+  shootCooldownMs = SHOT_COOLDOWN_MS
+}: MatchViewProps) {
   const lastShotMsRef = useRef(0);
   const topLeaderboard = useMemo(() => match.leaderboard.slice(0, 4), [match.leaderboard]);
 
   const fireShot = (targetX: number, targetY: number): void => {
     const nowMs = Date.now();
-    if (nowMs - lastShotMsRef.current < SHOT_COOLDOWN_MS || !roomCode) {
+    if (nowMs - lastShotMsRef.current < shootCooldownMs) {
       return;
     }
+
     lastShotMsRef.current = nowMs;
+    const clamped = clampPlayfieldTarget(targetX, targetY);
+
+    if (onShoot) {
+      onShoot({
+        targetX: clamped.targetX,
+        targetY: clamped.targetY,
+        clientTs: nowMs
+      });
+      return;
+    }
+
+    if (!roomCode) {
+      return;
+    }
+
     getSocket().emit("shoot", {
       roomCode,
-      targetX: Math.max(0, Math.min(PLAYFIELD_WIDTH, targetX)),
-      targetY: Math.max(0, Math.min(PLAYFIELD_HEIGHT, targetY)),
+      targetX: clamped.targetX,
+      targetY: clamped.targetY,
       clientTs: nowMs
     });
   };

@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { isCreateRoomPayload, isJoinRoomPayload, isShootPayload, isStartGamePayload } from "./events.js";
+import "./simulation.spec.js";
 
 assert.equal(isCreateRoomPayload({ playerName: "Dana", characterId: "scout" }), true);
 assert.equal(isCreateRoomPayload({ playerName: " ", characterId: "scout" }), false);

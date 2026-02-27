@@ -13,6 +13,10 @@
   grid-template-columns: 1fr;
 }
 
+.page-offline {
+  grid-template-columns: 1fr;
+}
+
 .lobby-hero,
 .room-header {
   padding: 18px;
@@ -89,6 +93,20 @@ h2 {
 .lobby-preview,
 .waiting-shell {
   padding: 14px 16px;
+}
+
+.offline-profile {
+  padding: 14px 16px;
+}
+
+.offline-profile p {
+  margin: 10px 0 0;
+  color: #c5dcf2;
+}
+
+.offline-intro p {
+  margin: 8px 0 0;
+  color: #b4cde4;
 }
 
 .plain-list {

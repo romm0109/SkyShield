@@ -225,6 +225,16 @@ input {
   border-top: 1px solid rgba(143, 190, 236, 0.24);
 }
 
+.page-offline .room-header {
+  background:
+    radial-gradient(circle at 85% 10%, rgba(88, 217, 154, 0.16), transparent 42%),
+    linear-gradient(180deg, var(--panel-soft), var(--panel));
+}
+
+.offline-profile strong {
+  color: var(--accent);
+}
+
 @media (max-width: 640px) {
   .hud {
     grid-template-columns: 1fr;

@@ -16,7 +16,8 @@ export function LobbyPage() {
     setCharacterId,
     setRoomCodeInput,
     createRoom,
-    joinRoom
+    joinRoom,
+    enterOfflineMode
   } = useSessionStore();
 
   useEffect(() => {
@@ -66,6 +67,15 @@ export function LobbyPage() {
           </button>
           <button type="button" onClick={joinRoom}>
             Join Room
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              enterOfflineMode();
+              navigate("/offline");
+            }}
+          >
+            Singleplayer (Offline)
           </button>
         </div>
         <p className="status-line">{status}</p>

@@ -5,42 +5,109 @@
   "nxJsonPlugins": [],
   "fileMap": {
     "projectFileMap": {
-      "shared-types": [
+      "client": [
         {
-          "file": "shared/types/package.json",
-          "hash": "11073557946344331821"
+          "file": "apps/client/index.html",
+          "hash": "17814964380600613428"
         },
         {
-          "file": "shared/types/project.json",
-          "hash": "15932710351129578426"
+          "file": "apps/client/package.json",
+          "hash": "4390157149407421774",
+          "deps": [
+            "npm:@types/react",
+            "npm:@types/react-dom",
+            "npm:@vitejs/plugin-react",
+            "npm:vite",
+            "shared-types",
+            "npm:react",
+            "npm:react-dom",
+            "npm:react-router",
+            "npm:socket.io-client"
+          ]
         },
         {
-          "file": "shared/types/src/events.spec.ts",
-          "hash": "8867348459214263906"
+          "file": "apps/client/project.json",
+          "hash": "16568393122213882547"
         },
         {
-          "file": "shared/types/src/events.ts",
-          "hash": "2958590052053364589"
+          "file": "apps/client/src/app/App.tsx",
+          "hash": "12042579726940272561"
         },
         {
-          "file": "shared/types/src/index.ts",
-          "hash": "11893160101021918764"
+          "file": "apps/client/src/app/router.tsx",
+          "hash": "16823516012632871044"
         },
         {
-          "file": "shared/types/src/models.ts",
-          "hash": "6143520869088636737"
+          "file": "apps/client/src/app/useSessionStore.ts",
+          "hash": "12602135463805101979"
         },
         {
-          "file": "shared/types/src/run-tests.ts",
-          "hash": "3717371256577409826"
+          "file": "apps/client/src/game/MatchView.spec.ts",
+          "hash": "14135859385487486620"
         },
         {
-          "file": "shared/types/tsconfig.json",
-          "hash": "13028267630629361019"
+          "file": "apps/client/src/game/MatchView.tsx",
+          "hash": "10918460046477131542"
         },
         {
-          "file": "shared/types/tsconfig.tsbuildinfo",
-          "hash": "1093346107919952158"
+          "file": "apps/client/src/game/types.ts",
+          "hash": "5213335556891471379"
+        },
+        {
+          "file": "apps/client/src/game/useMatchState.ts",
+          "hash": "5599312457994453744"
+        },
+        {
+          "file": "apps/client/src/main.tsx",
+          "hash": "4752736007840088000"
+        },
+        {
+          "file": "apps/client/src/net/socket.ts",
+          "hash": "11016260369715600657"
+        },
+        {
+          "file": "apps/client/src/offline/offlineConfig.ts",
+          "hash": "8590536916149471634"
+        },
+        {
+          "file": "apps/client/src/offline/useOfflineMatchState.spec.ts",
+          "hash": "857689602329222898"
+        },
+        {
+          "file": "apps/client/src/offline/useOfflineMatchState.ts",
+          "hash": "10707379985684155256"
+        },
+        {
+          "file": "apps/client/src/pages/LobbyPage.tsx",
+          "hash": "11211073730773863678"
+        },
+        {
+          "file": "apps/client/src/pages/NotFoundPage.tsx",
+          "hash": "6334846110379184451"
+        },
+        {
+          "file": "apps/client/src/pages/OfflinePage.tsx",
+          "hash": "12895078908165067324"
+        },
+        {
+          "file": "apps/client/src/pages/RoomPage.tsx",
+          "hash": "11447628370653409742"
+        },
+        {
+          "file": "apps/client/src/pages/page-layout.css",
+          "hash": "13014862381104201263"
+        },
+        {
+          "file": "apps/client/src/styles.css",
+          "hash": "10105267848285179388"
+        },
+        {
+          "file": "apps/client/tsconfig.json",
+          "hash": "18368989495407887401"
+        },
+        {
+          "file": "apps/client/vite.config.ts",
+          "hash": "14822325752791868233"
         }
       ],
       "server": [
@@ -92,11 +159,11 @@
         },
         {
           "file": "apps/server/src/game-loop/simulation.spec.ts",
-          "hash": "12360579239249555997"
+          "hash": "5758989359093950670"
         },
         {
           "file": "apps/server/src/game-loop/simulation.ts",
-          "hash": "4614087962046647777"
+          "hash": "9689099508995722214"
         },
         {
           "file": "apps/server/src/main.ts",
@@ -123,93 +190,50 @@
           "hash": "13585184342387267511"
         }
       ],
-      "client": [
+      "shared-types": [
         {
-          "file": "apps/client/index.html",
-          "hash": "17814964380600613428"
+          "file": "shared/types/package.json",
+          "hash": "11073557946344331821"
         },
         {
-          "file": "apps/client/package.json",
-          "hash": "4390157149407421774",
-          "deps": [
-            "npm:@types/react",
-            "npm:@types/react-dom",
-            "npm:@vitejs/plugin-react",
-            "npm:vite",
-            "shared-types",
-            "npm:react",
-            "npm:react-dom",
-            "npm:react-router",
-            "npm:socket.io-client"
-          ]
+          "file": "shared/types/project.json",
+          "hash": "15932710351129578426"
         },
         {
-          "file": "apps/client/project.json",
-          "hash": "16568393122213882547"
+          "file": "shared/types/src/events.spec.ts",
+          "hash": "8867348459214263906"
         },
         {
-          "file": "apps/client/src/app/App.tsx",
-          "hash": "12042579726940272561"
+          "file": "shared/types/src/events.ts",
+          "hash": "2958590052053364589"
         },
         {
-          "file": "apps/client/src/app/router.tsx",
-          "hash": "14340018620092912959"
+          "file": "shared/types/src/index.ts",
+          "hash": "13219473383223277770"
         },
         {
-          "file": "apps/client/src/app/useSessionStore.ts",
-          "hash": "17461994136646734175"
+          "file": "shared/types/src/models.ts",
+          "hash": "6143520869088636737"
         },
         {
-          "file": "apps/client/src/game/MatchView.spec.ts",
-          "hash": "14482827475394192443"
+          "file": "shared/types/src/run-tests.ts",
+          "hash": "11002275974768681470"
         },
         {
-          "file": "apps/client/src/game/MatchView.tsx",
-          "hash": "7198649944069388016"
+          "file": "shared/types/src/simulation.spec.ts",
+          "hash": "14130261604201863085"
         },
         {
-          "file": "apps/client/src/game/types.ts",
-          "hash": "5213335556891471379"
+          "file": "shared/types/src/simulation.ts",
+          "hash": "17869621624680141412"
         },
         {
-          "file": "apps/client/src/game/useMatchState.ts",
-          "hash": "5599312457994453744"
+          "file": "shared/types/tsconfig.json",
+          "hash": "13028267630629361019"
         },
         {
-          "file": "apps/client/src/main.tsx",
-          "hash": "4752736007840088000"
-        },
-        {
-          "file": "apps/client/src/net/socket.ts",
-          "hash": "11016260369715600657"
-        },
-        {
-          "file": "apps/client/src/pages/LobbyPage.tsx",
-          "hash": "7516823440776435180"
-        },
-        {
-          "file": "apps/client/src/pages/NotFoundPage.tsx",
-          "hash": "6334846110379184451"
-        },
-        {
-          "file": "apps/client/src/pages/RoomPage.tsx",
-          "hash": "11447628370653409742"
-        },
-        {
-          "file": "apps/client/src/pages/page-layout.css",
-          "hash": "9950422848653501932"
-        },
-        {
-          "file": "apps/client/src/styles.css",
-          "hash": "4974230209604572397"
-        },
-        {
-          "file": "apps/client/tsconfig.json",
-          "hash": "18368989495407887401"
-        },
-        {
-          "file": "apps/client/vite.config.ts",
-          "hash": "14822325752791868233"
+          "file": "shared/types/tsconfig.tsbuildinfo",
+          "hash": "1093346107919952158"
         }
       ]
     },
@@ -217,6 +241,14 @@
       {
         "file": ".agents/plans/implement-authoritative-gameplay-loop-and-client-rendering.md",
         "hash": "5398233055598840461"
+      },
+      {
+        "file": ".agents/plans/implement-multi-cannon-player-rendering-and-image-character-selection.md",
+        "hash": "18125711575307465204"
+      },
+      {
+        "file": ".agents/plans/implement-offline-singleplayer-mode-with-shared-simulation.md",
+        "hash": "2999406608020421866"
       },
       {
         "file": ".agents/plans/implement-server-game-loop-foundation.md",
@@ -244,7 +276,7 @@
       },
       {
         "file": "IMPLEMENTED_SO_FAR.md",
-        "hash": "7084134153123944079"
+        "hash": "2426039250383221603"
       },
       {
         "file": "PRD.md",
@@ -252,7 +284,7 @@
       },
       {
         "file": "README.md",
-        "hash": "5517569319843215898"
+        "hash": "4649467936891778262"
       },
       {
         "file": "eslint.config.js",
@@ -269,6 +301,10 @@
       {
         "file": "package.json",
         "hash": "12581633610212923230"
+      },
+      {
+        "file": "temp_plan_test.md",
+        "hash": "3244421341483603138"
       },
       {
         "file": "tsconfig.base.json",
