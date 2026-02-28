@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: skyshield-server
+    env: node
+    rootDir: .
+    buildCommand: npm install && npm run build --workspace shared/types && npm run build --workspace apps/server
+    startCommand: node apps/server/dist/main.js
+    envVars:
+      - key: CLIENT_ORIGIN
+        value: https://YOUR-CLIENT.onrender.com
+
+  - type: static_site
+    name: skyshield-client
+    rootDir: .
+    buildCommand: npm install && npm run build --workspace shared/types && npm run build --workspace apps/client
+    staticPublishPath: apps/client/dist
+    envVars:
+      - key: VITE_SOCKET_URL
+        value: https://YOUR-SERVER.onrender.com
