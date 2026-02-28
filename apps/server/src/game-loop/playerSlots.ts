@@ -1,4 +1,4 @@
-import type { PlayerSlotState, PlayerState } from "@skyshield/shared-types";
+﻿import type { PlayerSlotState, PlayerState } from "../contracts/models.js";
 
 const DEFAULT_SIDE_PADDING = 56;
 const DEFAULT_CANNON_OFFSET_Y = 24;
@@ -46,4 +46,5 @@ export function getCannonOriginByPlayerId(playerId: string, slots: PlayerSlotSta
   }
   return null;
 }
+
 

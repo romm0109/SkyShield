@@ -1,8 +1,8 @@
-import { createServer } from "node:http";
+﻿import { createServer } from "node:http";
 import assert from "node:assert/strict";
 import { io as createClient, Socket as ClientSocket } from "socket.io-client";
 import { Server } from "socket.io";
-import type { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from "@skyshield/shared-types";
+import type { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from "../contracts/events.js";
 import { registerLobbyEvents } from "./lobbyEvents.js";
 import { registerShootEvents } from "./shootEvents.js";
 import { MatchLifecycleManager } from "../game-loop/matchLifecycle.js";
@@ -193,3 +193,4 @@ export async function runShootEventsIntegrationSuite(): Promise<void> {
     await new Promise<void>((resolve) => httpServer.close(() => resolve()));
   }
 }
+

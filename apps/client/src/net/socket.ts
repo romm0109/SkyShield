@@ -1,5 +1,5 @@
-import { io, type Socket } from "socket.io-client";
-import type { ClientToServerEvents, ServerToClientEvents } from "@skyshield/shared-types";
+﻿import { io, type Socket } from "socket.io-client";
+import type { ClientToServerEvents, ServerToClientEvents } from "../contracts/events.js";
 
 let socket: Socket<ServerToClientEvents, ClientToServerEvents> | undefined;
 
@@ -27,3 +27,4 @@ export function disconnectSocket(): void {
     socket.disconnect();
   }
 }
+

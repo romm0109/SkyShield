@@ -1,5 +1,5 @@
-import { createContext, createElement, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import type { LobbyState } from "@skyshield/shared-types";
+﻿import { createContext, createElement, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import type { LobbyState } from "../contracts/models.js";
 import { setSfxEnabled } from "../audio/sfx.js";
 import { useMatchState, type UseMatchStateValue } from "../game/useMatchState.js";
 import { DEFAULT_CHARACTER_ID, isValidCharacterId } from "../game/characters.js";
@@ -243,3 +243,4 @@ export function useSessionStore(): SessionStoreValue {
   }
   return context;
 }
+

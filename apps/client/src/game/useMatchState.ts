@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import type { LobbyState } from "@skyshield/shared-types";
+﻿import { useEffect, useRef, useState } from "react";
+import type { LobbyState } from "../contracts/models.js";
 import { getSocket } from "../net/socket.js";
 import { playGameOver } from "../audio/sfx.js";
 import type { GameOverSnapshot, HitConfirmedSnapshot, MatchPhase, MatchSnapshot } from "./types.js";
@@ -100,3 +100,4 @@ export function useMatchState(initialLobbyState: LobbyState | null, initialRoomC
     roomCode
   };
 }
+

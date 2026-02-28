@@ -1,6 +1,7 @@
-import assert from "node:assert/strict";
+﻿import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { buildLeaderboard, stepSimulation, type RoomState, type SimulationConfig } from "@skyshield/shared-types";
+import { buildLeaderboard, stepSimulation, type SimulationConfig } from "../contracts/simulation.js";
+import type { RoomState } from "../contracts/models.js";
 
 const config: SimulationConfig = {
   playfieldWidth: 480,
@@ -215,3 +216,5 @@ describe("buildLeaderboard", () => {
     assert.equal(board[0]?.accuracy, 70);
   });
 });
+
+

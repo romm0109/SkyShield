@@ -1,4 +1,4 @@
-import type { PlayerSlotState } from "@skyshield/shared-types";
+﻿import type { PlayerSlotState } from "../contracts/models.js";
 
 export const PLAYFIELD_WIDTH = 480;
 export const PLAYFIELD_HEIGHT = 720;
@@ -25,4 +25,5 @@ export function toProjectileOwnerClass(ownerId: string): string {
   }
   return `projectile-owner-${hash}`;
 }
+
 

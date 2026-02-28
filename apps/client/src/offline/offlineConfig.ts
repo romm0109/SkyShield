@@ -1,4 +1,4 @@
-import type { SimulationConfig } from "@skyshield/shared-types";
+﻿import type { SimulationConfig } from "../contracts/simulation.js";
 
 export const OFFLINE_MATCH_DURATION_SECONDS = 600;
 export const OFFLINE_CITY_HP = 20;
@@ -21,3 +21,4 @@ export const OFFLINE_SIMULATION_CONFIG: SimulationConfig = {
   lightMeteorPoints: 10,
   heavyMeteorPoints: 25
 };
+

@@ -5,7 +5,7 @@ import { registerShootEvents } from "./events/shootEvents.js";
 import { MatchLifecycleManager } from "./game-loop/matchLifecycle.js";
 import { RoomStore } from "./rooms/roomStore.js";
 import { Server } from "socket.io";
-import type { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from "@skyshield/shared-types";
+import type { ClientToServerEvents, InterServerEvents, ServerToClientEvents, SocketData } from "./contracts/events.js";
 
 const env = loadEnv();
 const roomStore = new RoomStore(env.MAX_PLAYERS_PER_ROOM, {

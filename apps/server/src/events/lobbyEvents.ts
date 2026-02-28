@@ -1,10 +1,10 @@
-import type {
+ο»Ώimport type {
   ClientToServerEvents,
   ErrorEventPayload,
   ServerToClientEvents,
   SocketData
-} from "@skyshield/shared-types";
-import { isCreateRoomPayload, isJoinRoomPayload, isStartGamePayload } from "@skyshield/shared-types";
+} from "../contracts/events.js";
+import { isCreateRoomPayload, isJoinRoomPayload, isStartGamePayload } from "../contracts/events.js";
 import type { Server, Socket } from "socket.io";
 import { MatchLifecycleManager } from "../game-loop/matchLifecycle.js";
 import { RoomStore } from "../rooms/roomStore.js";
@@ -20,7 +20,7 @@ function emitError(socket: Socket<ClientToServerEvents, ServerToClientEvents>, p
 function emitThrottled(socket: Socket<ClientToServerEvents, ServerToClientEvents>): void {
   emitError(socket, {
     code: "EVENT_THROTTLED",
-    messageHe: "δτςεμδ πωμηδ ξδψ ξγι. πρε ωεα αςεγ ψβς."
+    messageHe: "Χ”Χ¤ΧΆΧ•ΧΧ” Χ Χ©ΧΧ—Χ” ΧΧ”Χ¨ ΧΧ“Χ™. Χ Χ΅Χ• Χ©Χ•Χ‘ Χ‘ΧΆΧ•Χ“ Χ¨Χ’ΧΆ."
   });
 }
 
@@ -49,7 +49,7 @@ export function registerLobbyEvents(
     }
 
     if (!isCreateRoomPayload(rawPayload)) {
-      emitError(socket, { code: "INVALID_PAYLOAD", messageHe: "τψθι δωηχο μΰ ϊχιπιν" });
+      emitError(socket, { code: "INVALID_PAYLOAD", messageHe: "Χ¤Χ¨ΧΧ™ Χ”Χ©Χ—Χ§Χ ΧΧ ΧªΧ§Χ™Χ Χ™Χ" });
       return;
     }
 
@@ -84,7 +84,7 @@ export function registerLobbyEvents(
     }
 
     if (!isJoinRoomPayload(rawPayload)) {
-      emitError(socket, { code: "INVALID_PAYLOAD", messageHe: "χεγ ηγψ ΰε τψθι ωηχο μΰ ϊχιπιν" });
+      emitError(socket, { code: "INVALID_PAYLOAD", messageHe: "Χ§Χ•Χ“ Χ—Χ“Χ¨ ΧΧ• Χ¤Χ¨ΧΧ™ Χ©Χ—Χ§Χ ΧΧ ΧªΧ§Χ™Χ Χ™Χ" });
       return;
     }
 
@@ -102,8 +102,8 @@ export function registerLobbyEvents(
     if ("error" in joinResult) {
       const payload =
         joinResult.error === "ROOM_NOT_FOUND"
-          ? { code: "ROOM_NOT_FOUND", messageHe: "δηγψ μΰ πξφΰ" }
-          : { code: "ROOM_FULL", messageHe: "δηγψ ξμΰ" };
+          ? { code: "ROOM_NOT_FOUND", messageHe: "Χ”Χ—Χ“Χ¨ ΧΧ Χ ΧΧ¦Χ" }
+          : { code: "ROOM_FULL", messageHe: "Χ”Χ—Χ“Χ¨ ΧΧΧ" };
       emitError(socket, payload);
       console.log(JSON.stringify({ event: "join_room_failed", socketId: socket.id, roomCode, code: payload.code }));
       return;
@@ -128,38 +128,39 @@ export function registerLobbyEvents(
     }
 
     if (!isStartGamePayload(rawPayload)) {
-      emitError(socket, { code: "INVALID_PAYLOAD", messageHe: "χμθ δϊημϊ ξωηχ μΰ ϊχιο" });
+      emitError(socket, { code: "INVALID_PAYLOAD", messageHe: "Χ§ΧΧ Χ”ΧªΧ—ΧΧª ΧΧ©Χ—Χ§ ΧΧ ΧªΧ§Χ™Χ" });
       return;
     }
 
     const roomCode = sanitizeRoomCode(rawPayload.roomCode);
     const room = roomStore.getRoom(roomCode);
     if (!room) {
-      emitError(socket, { code: "ROOM_NOT_FOUND", messageHe: "δηγψ μΰ πξφΰ" });
+      emitError(socket, { code: "ROOM_NOT_FOUND", messageHe: "Χ”Χ—Χ“Χ¨ ΧΧ Χ ΧΧ¦Χ" });
       return;
     }
 
     if (!room.players.has(socket.id)) {
-      emitError(socket, { code: "NOT_IN_ROOM", messageHe: "δωηχο μΰ πξφΰ αηγψ" });
+      emitError(socket, { code: "NOT_IN_ROOM", messageHe: "Χ”Χ©Χ—Χ§Χ ΧΧ Χ ΧΧ¦Χ Χ‘Χ—Χ“Χ¨" });
       return;
     }
 
     if (!roomStore.isHost(roomCode, socket.id)) {
-      emitError(socket, { code: "NOT_HOST", messageHe: "ψχ δξΰψη ιλεμ μδϊηιμ ξωηχ" });
+      emitError(socket, { code: "NOT_HOST", messageHe: "Χ¨Χ§ Χ”ΧΧΧ¨Χ— Χ™Χ›Χ•Χ ΧΧ”ΧªΧ—Χ™Χ ΧΧ©Χ—Χ§" });
       return;
     }
 
     if (room.phase !== "lobby") {
-      emitError(socket, { code: "INVALID_PHASE", messageHe: "μΰ πιϊο μδϊηιμ ξωηχ αωμα δπεληι" });
+      emitError(socket, { code: "INVALID_PHASE", messageHe: "ΧΧ Χ Χ™ΧªΧ ΧΧ”ΧªΧ—Χ™Χ ΧΧ©Χ—Χ§ Χ‘Χ©ΧΧ‘ Χ”Χ Χ•Χ›Χ—Χ™" });
       return;
     }
 
     const didStart = matchLifecycle.startCountdown(roomCode);
     if (!didStart) {
-      emitError(socket, { code: "GAME_ALREADY_STARTED", messageHe: "δξωηχ λαψ δϊηιμ" });
+      emitError(socket, { code: "GAME_ALREADY_STARTED", messageHe: "Χ”ΧΧ©Χ—Χ§ Χ›Χ‘Χ¨ Χ”ΧªΧ—Χ™Χ" });
       return;
     }
 
     console.log(JSON.stringify({ event: "start_game_accepted", roomCode, socketId: socket.id }));
   });
 }
+

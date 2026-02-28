@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import type { MatchRuntimeState, PlayerState, QueuedShot, RoomState } from "@skyshield/shared-types";
-import { buildLeaderboard, stepSimulation } from "@skyshield/shared-types";
+﻿import { useCallback, useEffect, useRef, useState } from "react";
+import type { MatchRuntimeState, PlayerState, RoomState } from "../contracts/models.js";
+import { buildLeaderboard, stepSimulation, type QueuedShot } from "../contracts/simulation.js";
 import type { GameOverSnapshot, HitConfirmedSnapshot, MatchPhase, MatchSnapshot } from "../game/types.js";
 import {
   OFFLINE_CITY_HP,
@@ -330,3 +330,5 @@ export function useOfflineMatchState(playerName: string, characterId: string): U
     fireShot
   };
 }
+
+

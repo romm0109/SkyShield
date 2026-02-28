@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef } from "react";
-import type { PlayerState } from "@skyshield/shared-types";
+﻿import { useEffect, useMemo, useRef } from "react";
+import type { PlayerState } from "../contracts/models.js";
 import { getSocket } from "../net/socket.js";
 import cityImage from "../assets/city.png";
 import heavyMissileImage from "../assets/missile.png";
@@ -267,3 +267,4 @@ export function MatchView({
     </section>
   );
 }
+

@@ -3836,11 +3836,6 @@
       },
       {
         "source": "client",
-        "target": "shared-types",
-        "type": "static"
-      },
-      {
-        "source": "client",
         "target": "npm:react",
         "type": "static"
       },
@@ -3874,11 +3869,6 @@
       {
         "source": "server",
         "target": "npm:socket.io-client",
-        "type": "static"
-      },
-      {
-        "source": "server",
-        "target": "shared-types",
         "type": "static"
       },
       {
@@ -7139,5 +7129,5 @@
   },
   "version": "6.0",
   "errors": [],
-  "computedAt": 1772236523363
+  "computedAt": 1772238049539
 }

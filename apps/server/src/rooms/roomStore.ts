@@ -1,11 +1,11 @@
-import type {
+﻿import type {
   LobbyState,
   MatchRuntimeState,
   PlayerMatchStats,
   PlayerState,
   RoomPhase,
   RoomState
-} from "@skyshield/shared-types";
+} from "../contracts/models.js";
 import { buildPlayerSlots } from "../game-loop/playerSlots.js";
 
 function generateRoomCode(): string {
@@ -226,3 +226,4 @@ export class RoomStore {
     return room;
   }
 }
+

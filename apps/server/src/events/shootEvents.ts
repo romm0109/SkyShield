@@ -1,10 +1,10 @@
-import type {
+ο»Ώimport type {
   ClientToServerEvents,
   ErrorEventPayload,
   ServerToClientEvents,
   SocketData
-} from "@skyshield/shared-types";
-import { isShootPayload } from "@skyshield/shared-types";
+} from "../contracts/events.js";
+import { isShootPayload } from "../contracts/events.js";
 import type { Socket } from "socket.io";
 import { MatchLifecycleManager } from "../game-loop/matchLifecycle.js";
 import { RoomStore } from "../rooms/roomStore.js";
@@ -29,29 +29,29 @@ export function registerShootEvents(
 
   socket.on("shoot", (rawPayload) => {
     if (!isShootPayload(rawPayload)) {
-      emitError(socket, { code: "INVALID_PAYLOAD", messageHe: "χμιθϊ ιψι μΰ ϊχιπδ" });
+      emitError(socket, { code: "INVALID_PAYLOAD", messageHe: "Χ§ΧΧ™ΧΧª Χ™Χ¨Χ™ ΧΧ ΧªΧ§Χ™Χ Χ”" });
       return;
     }
 
     const roomCode = sanitizeRoomCode(rawPayload.roomCode);
     const room = roomStore.getRoom(roomCode);
     if (!room) {
-      emitError(socket, { code: "ROOM_NOT_FOUND", messageHe: "δηγψ μΰ πξφΰ" });
+      emitError(socket, { code: "ROOM_NOT_FOUND", messageHe: "Χ”Χ—Χ“Χ¨ ΧΧ Χ ΧΧ¦Χ" });
       return;
     }
 
     if (!room.players.has(socket.id)) {
-      emitError(socket, { code: "NOT_IN_ROOM", messageHe: "δωηχο μΰ πξφΰ αηγψ" });
+      emitError(socket, { code: "NOT_IN_ROOM", messageHe: "Χ”Χ©Χ—Χ§Χ ΧΧ Χ ΧΧ¦Χ Χ‘Χ—Χ“Χ¨" });
       return;
     }
 
     if (room.phase !== "in_game") {
-      emitError(socket, { code: "INVALID_PHASE", messageHe: "πιϊο μιψεϊ ψχ αζξο ξωηχ τςιμ" });
+      emitError(socket, { code: "INVALID_PHASE", messageHe: "Χ Χ™ΧªΧ ΧΧ™Χ¨Χ•Χª Χ¨Χ§ Χ‘Χ–ΧΧ ΧΧ©Χ—Χ§ Χ¤ΧΆΧ™Χ" });
       return;
     }
 
     if (!limiter.allow(socket.id, "shoot")) {
-      emitError(socket, { code: "SHOT_THROTTLED", messageHe: "δθςιπδ ςγιιο αϊδμικ" });
+      emitError(socket, { code: "SHOT_THROTTLED", messageHe: "Χ”ΧΧΆΧ™Χ Χ” ΧΆΧ“Χ™Χ™Χ Χ‘ΧªΧ”ΧΧ™Χ" });
       return;
     }
 
@@ -73,3 +73,4 @@ export function registerShootEvents(
     );
   });
 }
+
