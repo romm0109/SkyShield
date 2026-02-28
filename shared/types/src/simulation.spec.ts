@@ -132,6 +132,29 @@ describe("stepSimulation", () => {
     assert.equal(result.nextMatch.cityHp, 4);
     assert.equal(result.nextMatch.meteors.length, 0);
   });
+
+  it("increases meteor speed every 15 seconds elapsed", () => {
+    const room = createRoom();
+    room.match.meteors = [
+      {
+        id: "m-1",
+        type: "light",
+        x: 100,
+        y: 0,
+        radius: 20,
+        speed: 120,
+        hp: 1,
+        maxHp: 1,
+        createdAtMs: 0
+      }
+    ];
+
+    const result = stepSimulation(room, 100, 100, [], config, 15_000);
+    const meteor = result.nextMatch.meteors[0];
+    assert.ok(meteor);
+    assert.equal(meteor.speed, 132);
+    assert.ok(Math.abs(meteor.y - 13.2) < 1e-9);
+  });
 });
 
 describe("buildLeaderboard", () => {

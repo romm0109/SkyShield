@@ -199,11 +199,12 @@ export class MatchLifecycleManager {
     const dtMs = Math.max(1, Math.min(250, nowMs - (loop.lastTickMs ?? nowMs)));
     loop.lastTickMs = nowMs;
     const elapsedSeconds = Math.floor((nowMs - loop.matchStartMs) / 1000);
+    const elapsedMatchMs = Math.max(0, nowMs - loop.matchStartMs);
     const remainingSeconds = Math.max(this.env.MATCH_DURATION_SECONDS - elapsedSeconds, 0);
 
     const queuedShots = this.shotQueue.get(roomCode) ?? [];
     this.shotQueue.set(roomCode, []);
-    const simulation = stepSimulation(room, dtMs, nowMs, queuedShots, this.simulationConfig);
+    const simulation = stepSimulation(room, dtMs, nowMs, queuedShots, this.simulationConfig, elapsedMatchMs);
 
     for (const [playerId, delta] of Object.entries(simulation.playerDeltas)) {
       this.roomStore.updatePlayer(roomCode, playerId, (player) => ({
