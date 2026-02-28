@@ -61,12 +61,20 @@
           "hash": "7882719508156471225"
         },
         {
+          "file": "apps/client/src/assets/players/miri_regev.png",
+          "hash": "3591312638844875908"
+        },
+        {
           "file": "apps/client/src/assets/players/superman_israel.png",
           "hash": "15371212018029663403"
         },
         {
           "file": "apps/client/src/assets/players/superman_usa.png",
           "hash": "5500636585484827894"
+        },
+        {
+          "file": "apps/client/src/assets/players/tali_gotliv.png",
+          "hash": "17018724531744505464"
         },
         {
           "file": "apps/client/src/assets/players/trump.png",
@@ -90,7 +98,7 @@
         },
         {
           "file": "apps/client/src/contracts/simulation.ts",
-          "hash": "936401376309366847"
+          "hash": "14424743791279617713"
         },
         {
           "file": "apps/client/src/game/MatchView.spec.ts",
@@ -102,7 +110,7 @@
         },
         {
           "file": "apps/client/src/game/characters.ts",
-          "hash": "18108587953090716972"
+          "hash": "991698154178398789"
         },
         {
           "file": "apps/client/src/game/playerVisuals.ts",
@@ -126,7 +134,7 @@
         },
         {
           "file": "apps/client/src/offline/offlineConfig.ts",
-          "hash": "3006075736768628115"
+          "hash": "532745899809912124"
         },
         {
           "file": "apps/client/src/offline/useOfflineMatchState.spec.ts",
@@ -134,7 +142,7 @@
         },
         {
           "file": "apps/client/src/offline/useOfflineMatchState.ts",
-          "hash": "7714005254940536414"
+          "hash": "11553383232217187318"
         },
         {
           "file": "apps/client/src/pages/LobbyPage.tsx",
@@ -166,7 +174,7 @@
         },
         {
           "file": "apps/client/tsconfig.json",
-          "hash": "4487384965637907540"
+          "hash": "12260508435801900083"
         },
         {
           "file": "apps/client/vite.config.ts",
@@ -189,7 +197,7 @@
         },
         {
           "file": "apps/server/src/config/env.ts",
-          "hash": "9122803716707685774"
+          "hash": "3848731609174764131"
         },
         {
           "file": "apps/server/src/contracts/events.ts",
@@ -201,7 +209,7 @@
         },
         {
           "file": "apps/server/src/contracts/simulation.ts",
-          "hash": "936401376309366847"
+          "hash": "14424743791279617713"
         },
         {
           "file": "apps/server/src/events/lobbyEvents.integration.spec.ts",
@@ -237,7 +245,7 @@
         },
         {
           "file": "apps/server/src/game-loop/matchLifecycle.ts",
-          "hash": "17327675097304891353"
+          "hash": "5454142674082741223"
         },
         {
           "file": "apps/server/src/game-loop/playerSlots.ts",
@@ -245,7 +253,7 @@
         },
         {
           "file": "apps/server/src/game-loop/simulation.spec.ts",
-          "hash": "12678353983366735741"
+          "hash": "10247991940261819590"
         },
         {
           "file": "apps/server/src/game-loop/simulation.ts",
@@ -307,11 +315,11 @@
         },
         {
           "file": "shared/types/src/simulation.spec.ts",
-          "hash": "16260036171109677769"
+          "hash": "3399668488817648576"
         },
         {
           "file": "shared/types/src/simulation.ts",
-          "hash": "936401376309366847"
+          "hash": "14424743791279617713"
         },
         {
           "file": "shared/types/tsconfig.json",
@@ -319,7 +327,7 @@
         },
         {
           "file": "shared/types/tsconfig.tsbuildinfo",
-          "hash": "16429186694916650898"
+          "hash": "14143958800409807279"
         }
       ]
     },

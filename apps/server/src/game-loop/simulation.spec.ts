@@ -136,7 +136,7 @@ describe("stepSimulation", () => {
     assert.equal(result.nextMatch.meteors.length, 0);
   });
 
-  it("increases meteor speed every 15 seconds elapsed", () => {
+  it("increases meteor speed every 10 seconds elapsed", () => {
     const room = createRoom();
     room.match.meteors = [
       {
@@ -152,11 +152,11 @@ describe("stepSimulation", () => {
       }
     ];
 
-    const result = stepSimulation(room, 100, 100, [], config, 15_000);
+    const result = stepSimulation(room, 100, 100, [], config, 10_000);
     const meteor = result.nextMatch.meteors[0];
     assert.ok(meteor);
-    assert.equal(meteor.speed, 132);
-    assert.ok(Math.abs(meteor.y - 13.2) < 1e-9);
+    assert.equal(meteor.speed, 150);
+    assert.ok(Math.abs(meteor.y - 15) < 1e-9);
   });
 
   it("spawns projectiles from each shooter slot origin", () => {

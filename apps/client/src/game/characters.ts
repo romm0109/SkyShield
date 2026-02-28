@@ -1,6 +1,8 @@
 import bibiImage from "../assets/players/bibi.png";
+import miriRegevImage from "../assets/players/miri_regev.png";
 import supermanIsraelImage from "../assets/players/superman_israel.png";
 import supermanUsaImage from "../assets/players/superman_usa.png";
+import taliGotlivImage from "../assets/players/tali_gotliv.png";
 import trumpImage from "../assets/players/trump.png";
 
 export interface CharacterOption {
@@ -11,6 +13,8 @@ export interface CharacterOption {
 
 export const CHARACTER_OPTIONS: CharacterOption[] = [
   { id: "bibi", label: "Bibi", imageSrc: bibiImage },
+  { id: "tali_gotliv", label: "Tali Gotliv", imageSrc: taliGotlivImage },
+  { id: "miri_regev", label: "Miri Regev", imageSrc: miriRegevImage },
   { id: "superman_israel", label: "Superman Israel", imageSrc: supermanIsraelImage },
   { id: "superman_usa", label: "Superman USA", imageSrc: supermanUsaImage },
   { id: "trump", label: "Trump", imageSrc: trumpImage }
@@ -27,4 +31,3 @@ export function isValidCharacterId(value: string): boolean {
 export function getCharacterById(value: string): CharacterOption | undefined {
   return CHARACTER_BY_ID.get(value.trim());
 }
-

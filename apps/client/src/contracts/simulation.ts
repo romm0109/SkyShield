@@ -1,4 +1,4 @@
-import type { MatchRuntimeState, MeteorState, PlayerState, ProjectileState, RoomState } from "./models.js";
+import type { MatchRuntimeState, MeteorState, MeteorType, PlayerState, ProjectileState, RoomState } from "./models.js";
 
 export interface QueuedShot {
   playerId: string;
@@ -41,9 +41,29 @@ export interface SimulationResult {
   hitEvents: HitConfirmedEvent[];
 }
 
-function createMeteor(match: MatchRuntimeState, config: SimulationConfig, spawnIndex: number, nowMs: number): MeteorState {
+const METEOR_SPEED_RAMP_INTERVAL_MS = 10_000;
+const METEOR_SPEED_RAMP_STEP = 0.25;
+
+function getMeteorSpeedMultiplier(elapsedMatchMs: number): number {
+  const rampSteps = Math.floor(Math.max(0, elapsedMatchMs) / METEOR_SPEED_RAMP_INTERVAL_MS);
+  return 1 + rampSteps * METEOR_SPEED_RAMP_STEP;
+}
+
+function toMeteorSpeed(config: SimulationConfig, meteorType: MeteorType, speedMultiplier: number): number {
+  const baseSpeed = meteorType === "heavy" ? config.meteorHeavySpeed : config.meteorLightSpeed;
+  return baseSpeed * speedMultiplier;
+}
+
+function createMeteor(
+  match: MatchRuntimeState,
+  config: SimulationConfig,
+  spawnIndex: number,
+  nowMs: number,
+  speedMultiplier: number
+): MeteorState {
   const nextId = match.nextMeteorId + spawnIndex;
   const isHeavy = nextId % config.meteorHeavySpawnEvery === 0;
+  const meteorType: MeteorType = isHeavy ? "heavy" : "light";
   const radius = isHeavy ? config.meteorHeavyRadius : config.meteorLightRadius;
   const laneCount = 6;
   const laneWidth = config.playfieldWidth / laneCount;
@@ -52,11 +72,11 @@ function createMeteor(match: MatchRuntimeState, config: SimulationConfig, spawnI
 
   return {
     id: `m-${nextId}`,
-    type: isHeavy ? "heavy" : "light",
+    type: meteorType,
     x,
     y: -radius,
     radius,
-    speed: isHeavy ? config.meteorHeavySpeed : config.meteorLightSpeed,
+    speed: toMeteorSpeed(config, meteorType, speedMultiplier),
     hp: isHeavy ? 2 : 1,
     maxHp: isHeavy ? 2 : 1,
     createdAtMs: nowMs
@@ -133,11 +153,13 @@ export function stepSimulation(
   dtMs: number,
   nowMs: number,
   queuedShots: QueuedShot[],
-  config: SimulationConfig
+  config: SimulationConfig,
+  elapsedMatchMs = 0
 ): SimulationResult {
   const dtSec = Math.max(dtMs, 1) / 1000;
   const playerDeltas: Record<string, PlayerDelta> = {};
   const hitEvents: HitConfirmedEvent[] = [];
+  const meteorSpeedMultiplier = getMeteorSpeedMultiplier(elapsedMatchMs);
 
   const spawnedProjectiles = spawnProjectiles(room, queuedShots, config, nowMs, playerDeltas);
   const movedProjectiles: ProjectileState[] = [...room.match.projectiles, ...spawnedProjectiles].map((projectile) => ({
@@ -149,10 +171,13 @@ export function stepSimulation(
   const spawnFromMs = room.match.lastMeteorSpawnMs ?? nowMs;
   const elapsedFromLastSpawn = Math.max(0, nowMs - spawnFromMs);
   const spawnCount = Math.floor(elapsedFromLastSpawn / config.meteorSpawnIntervalMs);
-  const spawnedMeteors = Array.from({ length: spawnCount }, (_, idx) => createMeteor(room.match, config, idx, nowMs));
+  const spawnedMeteors = Array.from({ length: spawnCount }, (_, idx) =>
+    createMeteor(room.match, config, idx, nowMs, meteorSpeedMultiplier)
+  );
   const movedMeteors: MeteorState[] = [...room.match.meteors, ...spawnedMeteors].map((meteor) => ({
     ...meteor,
-    y: meteor.y + meteor.speed * dtSec
+    speed: toMeteorSpeed(config, meteor.type, meteorSpeedMultiplier),
+    y: meteor.y + toMeteorSpeed(config, meteor.type, meteorSpeedMultiplier) * dtSec
   }));
 
   const nextMeteors = movedMeteors.map((meteor) => ({ ...meteor }));

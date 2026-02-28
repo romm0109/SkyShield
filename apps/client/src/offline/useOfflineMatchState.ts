@@ -210,7 +210,8 @@ export function useOfflineMatchState(playerName: string, characterId: string): U
 
       const queuedShots = shotQueueRef.current;
       shotQueueRef.current = [];
-      const simulation = stepSimulation(room, dtMs, nowMs, queuedShots, OFFLINE_SIMULATION_CONFIG);
+      const elapsedMatchMs = Math.max(0, nowMs - matchStartMsRef.current);
+      const simulation = stepSimulation(room, dtMs, nowMs, queuedShots, OFFLINE_SIMULATION_CONFIG, elapsedMatchMs);
 
       for (const [playerId, delta] of Object.entries(simulation.playerDeltas)) {
         const player = room.players.get(playerId);

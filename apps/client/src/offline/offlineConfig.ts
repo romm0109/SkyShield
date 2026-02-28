@@ -1,6 +1,6 @@
 ﻿import type { SimulationConfig } from "../contracts/simulation.js";
 
-export const OFFLINE_MATCH_DURATION_SECONDS = 600;
+export const OFFLINE_MATCH_DURATION_SECONDS = 120;
 export const OFFLINE_CITY_HP = 20;
 export const OFFLINE_COUNTDOWN_SECONDS = 3;
 export const OFFLINE_SHOT_COOLDOWN_MS = 400;

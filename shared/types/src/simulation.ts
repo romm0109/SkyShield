@@ -41,8 +41,8 @@ export interface SimulationResult {
   hitEvents: HitConfirmedEvent[];
 }
 
-const METEOR_SPEED_RAMP_INTERVAL_MS = 15_000;
-const METEOR_SPEED_RAMP_STEP = 0.1;
+const METEOR_SPEED_RAMP_INTERVAL_MS = 10_000;
+const METEOR_SPEED_RAMP_STEP = 0.25;
 
 function getMeteorSpeedMultiplier(elapsedMatchMs: number): number {
   const rampSteps = Math.floor(Math.max(0, elapsedMatchMs) / METEOR_SPEED_RAMP_INTERVAL_MS);
